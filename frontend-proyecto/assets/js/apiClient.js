@@ -5,7 +5,7 @@
 // La importamos para usarla en caso de un error 401.
 import { authService } from './auth.service.js';
 
-const API_BASE_URL = 'https://avisena.onrender.com';
+const API_BASE_URL = 'https://gestion-tareas-gcbf.onrender.com';
 
 /**
  * Cliente central para realizar todas las peticiones a la API.
