@@ -1,6 +1,6 @@
 <div class="row g-3 mb-4 align-items-center justify-content-between">
     <div class="col-auto">
-        <h1 class="app-page-title mb-0">Sensores</h1>
+        <h1 class="app-page-title mb-0">Tareas</h1>
     </div>
 
     <div class="col-auto">
@@ -12,9 +12,12 @@
 
                 <div class="col-auto">
                     <select class="form-select w-auto" id="filter-estado">
-                        <option selected value="all">Todos</option>
-                        <option value="active">Activos</option>
-                        <option value="inactive">Inactivos</option>
+                        <option selected value="all">Estados</option>
+                        <option value="active">Asignadas</option>
+                        <option value="inactive">Pendientes</option>
+                        <option value="inactive">En proceso</option>
+                        <option value="inactive">Completada</option>
+                        <option value="inactive">Cancelada</option>
                     </select>
                 </div>
 
@@ -29,7 +32,7 @@
                 </div>
 
                 <div class="col-auto">
-                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#create-sensor-modal">+ Nuevo Sensor</button>
+                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#create-tarea-modal">Agregar Tareas</button>
                 </div>
             </div>
         </div>
@@ -42,15 +45,16 @@
             <table class="table app-table-hover mb-0 text-left">
                 <thead>
                     <tr>
-                        <th class="cell">Nombre</th>
-                        <th class="cell">Tipo de Sensor</th>
-                        <th class="cell">Galpón</th>
+                        <th class="cell">Id usuario</th>
                         <th class="cell">Descripción</th>
+                        <th class="cell">Fecha/hora inicio</th>
+                        <th class="cell">Fecha/hora fin</th>
                         <th class="cell">Estado</th>
                         <th class="cell">Acciones</th>
                     </tr>
                 </thead>
-                <tbody id="sensors-table-body">
+                <tbody id="tareas-table-body">
+                    <!-- Las filas de tareas se insertarán aquí dinámicamente -->
                 </tbody>
             </table>
         </div>
@@ -61,7 +65,7 @@
     </ul>
 </nav>
 
-<div class="modal fade" id="create-sensor-modal" tabindex="-1" aria-hidden="true">
+<div class="modal fade" id="create-tarea-modal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -69,30 +73,17 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form id="create-sensor-form">
+                <form id="create-tarea-form">
                     <div class="mb-3">
-                        <label for="create-nombre" class="form-label">Nombre del Sensor</label>
-                        <input type="text" class="form-control" id="create-nombre" required>
+                        <label for="create-id_usuario" class="form-label">ID Usuario</label>
+                        <input type="number" class="form-control" id="create-id_usuario" required>
+                    <div class="mb-3">
+                        <label for="create-descripcion" class="form-label">Descripcion de la tarea</label>
+                        <input type="text" class="form-control" id="create-descripcion" required>
                     </div>
                     <div class="mb-3">
-                        <label for="create-id_tipo_sensor" class="form-label">Tipo de Sensor</label>
-                        <select class="form-select" id="create-id_tipo_sensor" required>
-                            <option value="">Seleccione un tipo...</option>
-                        </select>
-                    </div>
-                    <div class="mb-3">
-                        <label for="create-id_galpon" class="form-label">Galpón</label>
-                        <select class="form-select" id="create-id_galpon" required>
-                            <option value="">Seleccione un galpón...</option>
-                        </select>
-                    </div>
-                    <div class="mb-3">
-                        <label for="create-descripcion" class="form-label">Descripción</label>
-                        <textarea class="form-control" id="create-descripcion" rows="3" required></textarea>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                        <button type="submit" class="btn btn-primary">Crear Sensor</button>
+                        <label for="create-fecha_hora_init" class="form-label">Hora inicio Tarea</label>
+                        <input type="datetime-local" id="create-fecha_hora_init " class="form-control" required>
                     </div>
                 </form>
             </div>
