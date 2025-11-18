@@ -56,3 +56,47 @@ export async function request(endpoint, options = {}) {
         throw error;
     }
 }
+// import { authService } from './auth.service.js';
+
+// const API_BASE_URL = 'https://gestion-tareas-gcbf.onrender.com';
+
+// export async function request(endpoint, options = {}) {
+//     const url = `${API_BASE_URL}${endpoint}`;
+//     const token = localStorage.getItem('access_token');
+
+//     const headers = {
+//         'Content-Type': 'application/json',
+//         'accept': 'application/json',
+//         ...options.headers,
+//     };
+
+//     if (token) {
+//         headers['Authorization'] = `Bearer ${token}`;
+//     }
+
+//     try {
+//         const response = await fetch(url, { ...options, headers });
+
+//         if (response.status === 401) {
+//             alert('No tiene permisos');
+//             return;
+//         }
+
+//         if (response.status === 403) {
+//             alert('Token inválido');
+//             authService.logout();
+//             return;
+//         }
+
+//         if (!response.ok) {
+//             const errorData = await response.json().catch(() => ({ detail: 'Ocurrió un error en la petición.' }));
+//             throw new Error(errorData.detail);
+//         }
+
+//         return response.status === 204 ? {} : await response.json();
+
+//     } catch (error) {
+//         console.error(`Error en la petición a ${endpoint}:`, error);
+//         throw error;
+//     }
+// }

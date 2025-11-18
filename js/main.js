@@ -31,6 +31,17 @@ const loadContent = async (page) => {
       import('./pages/metodo_pago.js')
         .then(modulo => modulo.init());
     }
+
+    if (page === 'tareas') {
+      import('./pages/tareas.js')
+        .then(module => {
+          console.log("cargando tareas , esto para terminar que el dom cargue.");
+          requestAnimationFrame(() => {
+            console.log("entro");
+            module.init();
+          });
+        })
+    }
     // Agregar más módulos según sea necesario
 
   } catch (error) {
