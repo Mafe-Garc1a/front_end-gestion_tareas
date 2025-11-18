@@ -32,10 +32,6 @@ function createVentaRow(venta) {
                 }">
                     <i class="fa-regular fa-pen-to-square"></i>
                 </button>
-                <button class="btn btn-sm btn-info btn-detalles-venta me-1" data-venta-id="${
-                    venta.id_venta}" data-page="info_venta">
-                    <i class="fas fa-search"></i>
-                </button>
             </td>
         </tr>
     `;

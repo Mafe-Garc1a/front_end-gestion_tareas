@@ -1,0 +1,156 @@
+<!--  Row 1 -->
+<div class="row">
+    <div class="col">
+        <h3>Sistema de Ventas</h3>
+        <p class="fs-4 text-body-secondary">Registra nuevas ventas y sus detalles</p>
+    </div>
+</div>
+<div class="row">
+    <div class="col">
+        <div class="card">
+            <div class="card-body">
+                <div class="d-flex align-items-center gap-2">
+                    <span><i class="ti ti-shopping-cart text-dark h3"></i></span>
+                    <p class="mb-0 fs-5 text-dark">Información de la venta</p>
+                </div>
+                <div class="d-flex align-items-center gap-3 mt-3" id="venta-info-container">
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row" style="margin-top: 15px;">
+    <div class="col">
+        <div class="card">
+            <div class="card-body">
+                <div class="d-flex align-items-center gap-2">
+                    <p class="mb-0 fs-5 text-dark">Agregar Productos</p>
+                </div>
+                <div class="d-flex align-items-center gap-3 mt-3">
+                    <div class="d-flex flex-column">
+                        <label for="tipo_producto" class="form-label fw-semibold mb-1">Tipo de producto</label>
+                        <select class="form-select" id="tipo_producto">
+                            <option value="1">Huevos</option>
+                            <option value="2">Salvamento</option>
+                        </select>
+                    </div>
+                    <div class="d-flex flex-column">
+                        <label for="productos_select" class="form-label fw-semibold mb-1">Producto</label>
+                        <select class="form-select form-select" id="productos_select">
+                            <!-- <option>Selecciona producto</option> -->
+                        </select>
+                    </div>
+                    <div class="d-flex flex-column">
+                        <label for="cantidad" class="form-label fw-semibold mb-1">Cantidad</label>
+                        <input type="number" class="form-control" id="cantidad" placeholder="0">
+                    </div>
+                    <div class="d-flex flex-column">
+                        <label for="precio_unitario" class="form-label fw-semibold mb-1">Precio Unitario</label>
+                        <input type="number" class="form-control" id="precio_unitario" placeholder="0.00">
+                    </div>
+                    <div class="d-flex flex-column">
+                        <label for="descuento" class="form-label fw-semibold mb-1">Descuento (%)</label>
+                        <input type="number" class="form-control" id="descuento" placeholder="0">
+                    </div>
+                </div>
+                <div class="mt-4">
+                    <button class="btn btn-dark" id="createDetalle">
+                        <i class="ti ti-plus me-2"></i>
+                        Agregar Producto
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row" style="margin-top: 15px;">
+    <div class="col">
+        <div class="card">
+            <div class="card-body">
+                <p class="mb-0 fs-5 text-dark mb-4">Detalle de la Venta</p>
+
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead class="table-light fw-bold">
+                            <tr>
+                                <th scope="col">Tipo</th>
+                                <th scope="col">Producto</th>
+                                <th scope="col">Cantidad</th>
+                                <th scope="col">Precio Unit.</th>
+                                <th scope="col">Descuento (%)</th>
+                                <!-- <th scope="col">Subtotal</th> -->
+                                <th scope="col">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="detalles-table-body">
+                            
+                        </tbody>
+                    </table>
+                </div>
+                
+                <hr class="my-4">
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <p class="mb-1 fw-semibold">Total de descuentos:</p>
+                        <p class="mb-1 text-success fw-semibold">Total a pagar:</p>
+                    </div>
+                    <div class="col-md-6 text-end">
+                        <p id="total-descuento" class="mb-1 fw-semibold"></p>
+                        <p id="total-venta" class="text-success fw-semibold"></p>
+                    </div>
+                </div>
+                
+                <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                    <button data-page="ventas" id="guardar_venta" class="btn btn-success d-flex align-items-center">
+                        <iconify-icon icon="mdi:floppy" class="me-2 fs-5"></iconify-icon>
+                        Guardar Venta
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div><!-- end row -->
+
+<div class="modal fade" id="edit-detalle-modal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Editar Detalle</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form id="edit-detalle-form">
+          <input type="hidden" id="edit-detalle-id">
+
+          <div class="mb-3">
+            <label for="select-edit-producto" class="form-label">Producto</label>
+            <select class="form-control" id="select-edit-producto">
+
+            </select>
+          </div>
+          <div class="mb-3">
+            <label for="edit-cantidad" class="form-label">Cantidad</label>
+            <input type="number" class="form-control" id="edit-cantidad">
+          </div>
+          <div class="mb-3">
+            <label for="edit-descuento" class="form-label">Descuento</label>
+            <input type="number" class="form-control" id="edit-descuento">
+          </div>
+          <div class="mb-3">
+            <label for="edit-precio_unitario" class="form-label">Precio unitario</label>
+            <input type="number" class="form-control" id="edit-precio_unitario">
+          </div>
+
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+            <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
