@@ -300,16 +300,22 @@ async function cargarMetodosPago() {
 
     const selectTipoPago = document.getElementById('edit-tipo-pago');
 
+    selectTipoPago.innerHTML = '';
+
     if (Array.isArray(metodosPago)) {
-      metodosPago.forEach(metodo => {
-      // Creamos un nuevo option para cada método de pago recibido
 
+    const activos = metodosPago.filter(m => m.estado === true);
 
-      
+    if (activos.length === 0) {
+      selectTipoPago.innerHTML = '<option disabled>No hay métodos de pago activos</option>';
+      return;
+    }
 
+      // Insertar solo los activos
+        activos.forEach(metodo => {
         const option = document.createElement('option');
         option.value = metodo.id_tipo;
-        option.textContent = metodo.nombre;  
+        option.textContent = metodo.nombre;
         selectTipoPago.appendChild(option);
       });
     } else {
