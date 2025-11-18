@@ -32,10 +32,6 @@ function createVentaRow(venta) {
                 }">
                     <i class="fa-regular fa-pen-to-square"></i>
                 </button>
-                <button class="btn btn-sm btn-info btn-detalles-venta me-1" data-venta-id="${
-                    venta.id_venta}" data-page="info_venta">
-                    <i class="fas fa-search"></i>
-                </button>
             </td>
         </tr>
     `;
@@ -307,6 +303,10 @@ async function cargarMetodosPago() {
     if (Array.isArray(metodosPago)) {
       metodosPago.forEach(metodo => {
       // Creamos un nuevo option para cada método de pago recibido
+
+
+      
+
         const option = document.createElement('option');
         option.value = metodo.id_tipo;
         option.textContent = metodo.nombre;  

@@ -33,6 +33,11 @@ export const loadContent = async (page) => {
         .then(modulo => modulo.init());
     }
 
+    if (page === 'detalles_venta'){
+      import('./pages/detalles_venta.js').then(ventaDetalleModule => ventaDetalleModule.init());
+      
+    }
+
     if (page === 'tareas') {
       import('./pages/tareas.js')
         .then(module => {
