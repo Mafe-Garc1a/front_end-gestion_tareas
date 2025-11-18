@@ -25,13 +25,12 @@ const loadContent = async (page) => {
     if (page === 'users') {
       import('./pages/users.js')
         .then(usersModule => usersModule.init());
-    } else if (page === 'sensors') {
-      import('./pages/sensors.js')
-        .then(sensorsModule => sensorsModule.init());
-    }else if (page === 'sensor_types') {
-  import('./pages/sensor_types.js')
-    .then(sensorTypesModule => sensorTypesModule.init());
-}
+    }
+
+    if (page === 'metodos_pago') {
+      import('./pages/metodo_pago.js')
+        .then(modulo => modulo.init());
+    }
     // Agregar más módulos según sea necesario
 
   } catch (error) {
