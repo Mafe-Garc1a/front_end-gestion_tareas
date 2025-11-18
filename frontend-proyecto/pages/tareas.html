@@ -1,132 +1,183 @@
 <div class="row g-3 mb-4 align-items-center justify-content-between">
-    <div class="col-auto">
-        <h1 class="app-page-title mb-0">Tareas</h1>
-    </div>
+  <div class="col-auto">
+    <h1 class="app-page-title mb-0">Tareas</h1>
+  </div>
 
-    <div class="col-auto">
-        <div class="page-utilities">
-            <div class="row g-2 justify-content-start justify-content-md-end align-items-center">
-                <div class="col-auto">
-                    
-                </div>
+  <div class="col-auto">
+    <div class="page-utilities">
+      <div class="row g-2 justify-content-start justify-content-md-end align-items-center">
 
-                <div class="col-auto">
-                    <select class="form-select w-auto" id="filter-estado">
-                        <option selected value="all">Estados</option>
-                        <option value="active">Asignadas</option>
-                        <option value="inactive">Pendientes</option>
-                        <option value="inactive">En proceso</option>
-                        <option value="inactive">Completada</option>
-                        <option value="inactive">Cancelada</option>
-                    </select>
-                </div>
-
-                <div class="col-auto">
-                    <button class="btn app-btn-secondary" id="export-csv-btn">
-                        <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-download me-1" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                            <path fill-rule="evenodd" d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
-                            <path fill-rule="evenodd" d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/>
-                        </svg>
-                        Exportar CSV
-                    </button>
-                </div>
-
-                <div class="col-auto">
-                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#create-tarea-modal">Agregar Tareas</button>
-                </div>
-            </div>
+        <div class="col-auto">
+          <input id="search-input" class="form-control form-control-sm" placeholder="Buscar descripción..." />
         </div>
+
+        <div class="col-auto">
+          <select class="form-select w-auto" id="filter-estado">
+            <option selected value="all">Todos los estados</option>
+            <option value="Asignada">Asignada</option>
+            <option value="Pendiente">Pendiente</option>
+            <option value="En proceso">En proceso</option>
+            <option value="Completada">Completada</option>
+            <option value="Cancelada">Cancelada</option>
+          </select>
+        </div>
+
+        <div class="col-auto">
+          <input type="date" id="filter-fecha-inicio" class="form-control form-control-sm" title="Fecha inicio" />
+        </div>
+        <div class="col-auto">
+          <input type="date" id="filter-fecha-fin" class="form-control form-control-sm" title="Fecha fin" />
+        </div>
+
+        <div class="col-auto">
+          <button class="btn app-btn-secondary" id="export-csv-btn">Exportar CSV</button>
+        </div>
+
+        <div class="col-auto">
+         <button class="btn btn-primary"
+        id="btn-open-create"
+        data-bs-toggle="modal"
+        data-bs-target="#create-tarea-modal">
+            Agregar Tarea
+        </button>
+        </div>
+
+      </div>
     </div>
+  </div>
 </div>
 
 <div class="app-card app-card-orders-table shadow-sm mb-5">
-    <div class="app-card-body">
-        <div class="table-responsive">
-            <table class="table app-table-hover mb-0 text-left">
-                <thead>
-                    <tr>
-                        <th class="cell">Id usuario</th>
-                        <th class="cell">Descripción</th>
-                        <th class="cell">Fecha/hora inicio</th>
-                        <th class="cell">Fecha/hora fin</th>
-                        <th class="cell">Estado</th>
-                        <th class="cell">Acciones</th>
-                    </tr>
-                </thead>
-                <tbody id="tareas-table-body">
-                    <!-- Las filas de tareas se insertarán aquí dinámicamente -->
-                </tbody>
-            </table>
-        </div>
+  <div class="app-card-body">
+    <div class="table-responsive">
+      <table class="table app-table-hover mb-0 text-left">
+        <thead>
+          <tr>
+            <th class="cell">Id tarea</th>
+            <th class="cell">Id usuario</th>
+            <th class="cell">Descripción</th>
+            <th class="cell">Fecha/hora inicio</th>
+            <th class="cell">Fecha/hora fin</th>
+            <th class="cell">Estado</th>
+            <th class="cell">Acciones</th>
+          </tr>
+        </thead>
+        <tbody id="tareas-table-body">
+          <!-- Las filas de tareas se insertarán aquí dinámicamente -->
+        </tbody>
+      </table>
     </div>
+  </div>
 </div>
+
 <nav class="app-pagination" id="pagination-container">
-    <ul class="pagination justify-content-center" id="pagination-list">
-    </ul>
+  <ul class="pagination justify-content-center" id="pagination-list"></ul>
 </nav>
 
+<!-- MODAL CREAR -->
 <div class="modal fade" id="create-tarea-modal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Crear Nuevo Sensor</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <form id="create-tarea-form">
-                    <div class="mb-3">
-                        <label for="create-id_usuario" class="form-label">ID Usuario</label>
-                        <input type="number" class="form-control" id="create-id_usuario" required>
-                    <div class="mb-3">
-                        <label for="create-descripcion" class="form-label">Descripcion de la tarea</label>
-                        <input type="text" class="form-control" id="create-descripcion" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="create-fecha_hora_init" class="form-label">Hora inicio Tarea</label>
-                        <input type="datetime-local" id="create-fecha_hora_init " class="form-control" required>
-                    </div>
-                </form>
-            </div>
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form id="create-tarea-form">
+        <div class="modal-header">
+          <h5 class="modal-title">Crear Nueva Tarea</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
+
+        <div class="modal-body">
+          <div class="mb-3">
+            <label for="create-id_usuario" class="form-label">ID Usuario</label>
+            <input type="number" class="form-control" id="create-id_usuario" required>
+          </div>
+
+          <div class="mb-3">
+            <label for="create-descripcion" class="form-label">Descripción</label>
+            <input type="text" class="form-control" id="create-descripcion" required>
+          </div>
+
+          <div class="mb-3">
+            <label for="create-fecha_hora_init" class="form-label">Fecha / Hora Inicio</label>
+            <input type="datetime-local" id="create-fecha_hora_init" class="form-control" required>
+          </div>
+
+          <div class="mb-3">
+            <label for="create-fecha_hora_fin" class="form-label">Fecha / Hora Fin</label>
+            <input type="datetime-local" id="create-fecha_hora_fin" class="form-control">
+          </div>
+
+          <div class="mb-3">
+            <label for="create-estado" class="form-label">Estado</label>
+            <select id="create-estado" class="form-select" required>
+              <option value="Asignada">Asignada</option>
+              <option value="Pendiente">Pendiente</option>
+              <option value="En proceso">En proceso</option>
+              <option value="Completada">Completada</option>
+              <option value="Cancelada">Cancelada</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <button type="submit" class="btn btn-primary">Crear</button>
+        </div>
+      </form>
     </div>
+  </div>
 </div>
 
-<div class="modal fade" id="edit-sensor-modal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Editar Sensor</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <form id="edit-sensor-form">
-                    <input type="hidden" id="edit-sensor-id">
-                    <div class="mb-3">
-                        <label for="edit-nombre" class="form-label">Nombre del Sensor</label>
-                        <input type="text" class="form-control" id="edit-nombre" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="edit-id_tipo_sensor" class="form-label">Tipo de Sensor</label>
-                        <select class="form-select" id="edit-id_tipo_sensor" required>
-                            <option value="">Seleccione un tipo...</option>
-                        </select>
-                    </div>
-                    <div class="mb-3">
-                        <label for="edit-id_galpon" class="form-label">Galpón</label>
-                        <select class="form-select" id="edit-id_galpon" required>
-                            <option value="">Seleccione un galpón...</option>
-                        </select>
-                    </div>
-                    <div class="mb-3">
-                        <label for="edit-descripcion" class="form-label">Descripción</label>
-                        <textarea class="form-control" id="edit-descripcion" rows="3" required></textarea>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                        <button type="submit" class="btn btn-primary">Guardar Cambios</button>
-                    </div>
-                </form>
-            </div>
+<!-- MODAL EDITAR -->
+<div class="modal fade" id="edit-tarea-modal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form id="edit-tarea-form">
+        <div class="modal-header">
+          <h5 class="modal-title">Editar Tarea</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
+
+        <div class="modal-body">
+          <input type="hidden" id="edit-id_tarea" />
+
+          <div class="mb-3">
+            <label for="edit-id_usuario" class="form-label">ID Usuario</label>
+            <input type="number" class="form-control" id="edit-id_usuario" required>
+          </div>
+
+          <div class="mb-3">
+            <label for="edit-descripcion" class="form-label">Descripción</label>
+            <input type="text" class="form-control" id="edit-descripcion" required>
+          </div>
+
+          <div class="mb-3">
+            <label for="edit-fecha_hora_init" class="form-label">Fecha / Hora Inicio</label>
+            <input type="datetime-local" id="edit-fecha_hora_init" class="form-control" required>
+          </div>
+
+          <div class="mb-3">
+            <label for="edit-fecha_hora_fin" class="form-label">Fecha / Hora Fin</label>
+            <input type="datetime-local" id="edit-fecha_hora_fin" class="form-control">
+          </div>
+
+          <div class="mb-3">
+            <label for="edit-estado" class="form-label">Estado</label>
+            <select id="edit-estado" class="form-select" required>
+              <option value="Asignada">Asignada</option>
+              <option value="Pendiente">Pendiente</option>
+              <option value="En proceso">En proceso</option>
+              <option value="Completada">Completada</option>
+              <option value="Cancelada">Cancelada</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <button type="submit" class="btn btn-primary">Guardar</button>
+        </div>
+      </form>
     </div>
+  </div>
 </div>
+
+
