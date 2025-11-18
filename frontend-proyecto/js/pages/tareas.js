@@ -58,7 +58,7 @@ async function loadPage(page = 1) {
   currentPage = page;
   const tbody = document.getElementById("tareas-table-body");
   if (!tbody) {
-    console.error("No se encontró #tareas-table-body en el DOM.");
+    console.error("No se encontró tarea en el DOM.");
     return;
   }
   tbody.innerHTML = `<tr><td colspan="7" class="text-center">Cargando...</td></tr>`;
