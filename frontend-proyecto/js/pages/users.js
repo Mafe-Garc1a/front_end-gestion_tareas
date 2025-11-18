@@ -214,7 +214,8 @@ async function handleUpdateSubmit(event) {
   try {
     await userService.updateUser(userId, updatedData);
     modalInstance.hide();
-    init();
+    await init();
+    applyUserFilters();
   } catch (error) {
     console.error(`Error al actualizar usuario ${userId}:`, error);
     alert('No se pudo actualizar el usuario.');
@@ -244,7 +245,8 @@ async function handleStatusSwitch(event) {
     try {
       await userService.changeEstatusUser(userId, newStatus);
       alert(`Usuario ${newStatus ? 'activado' : 'desactivado'} exitosamente.`);
-      init();
+      await init();
+      applyUserFilters();
     } catch (error) {
       console.error(`Error al ${actionText} usuario ${userId}:`, error);
       alert(`No se pudo ${actionText} el usuario.`);
@@ -284,7 +286,8 @@ async function handleCreateSubmit(event) {
     
   document.getElementById('create-user-form').reset();
   alert('Usuario creado exitosamente.');
-  init();
+  await init();
+  applyUserFilters();
   } catch (error) {
     console.error('Error al crear usuario:', error);
     alert('No se pudo crear el usuario.');
@@ -347,7 +350,52 @@ async function init() {
   if (pageUtilities) {
     pageUtilities.removeEventListener("click", handleExportClick);
     pageUtilities.addEventListener("click", handleExportClick);
+
+    
+  }
+
+  const roleSelect = document.getElementById("filter-role");
+  const statusSelect = document.getElementById("filter-status");
+
+  if (roleSelect) {
+    roleSelect.removeEventListener("change", applyUserFilters);
+    roleSelect.addEventListener("change", applyUserFilters);
+  }
+
+  if (statusSelect) {
+    statusSelect.removeEventListener("change", applyUserFilters);
+    statusSelect.addEventListener("change", applyUserFilters);
   }
 }
 
 export { init };
+
+function applyUserFilters() {
+  const roleFilter = document.getElementById("filter-role")?.value || "all";
+  const statusFilter = document.getElementById("filter-status")?.value || "all";
+
+  const tableBody = document.getElementById("users-table-body");
+  if (!allUsers.length) return;
+
+  // Empieza con todos
+  let result = [...allUsers];
+
+  // Filtro por rol
+  if (roleFilter !== "all") {
+    result = result.filter(u => u.nombre_rol === roleFilter);
+  }
+
+  // Filtro por estado
+  if (statusFilter === "active") {
+    result = result.filter(u => u.estado === true);
+  }
+  if (statusFilter === "inactive") {
+    result = result.filter(u => u.estado === false);
+  }
+
+  filteredUsers = result;
+
+  tableBody.innerHTML = result.length
+    ? result.map(createUserRow).join("")
+    : `<tr><td colspan="7" class="text-center">No hay usuarios con esos criterios.</td></tr>`;
+}

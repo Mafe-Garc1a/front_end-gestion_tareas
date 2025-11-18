@@ -6,9 +6,23 @@
     <div class="col-auto">
         <div class="page-utilities">
             <div class="row g-2 justify-content-start justify-content-md-end align-items-center">
-                
+
                 <div class="col-auto">
-                    <!-- espacio reservado para filtros si algún día agregas -->
+                    <select id="filter-role" class="form-select w-auto">
+                        <option value="all">Todos los roles</option>
+                        <option value="superadmin">SuperAdmin</option>
+                        <option value="administrador">Admin</option>
+                        <option value="supervisor">Supervisor</option>
+                        <option value="operario">Operario</option>
+                    </select>
+                </div>
+
+                <div class="col-auto">
+                    <select id="filter-status" class="form-select w-auto">
+                        <option value="all">Todos</option>
+                        <option value="active">Activos</option>
+                        <option value="inactive">Inactivos</option>
+                    </select>
                 </div>
 
                 <div class="col-auto">
@@ -25,11 +39,14 @@
                     </div>
                 </div>
 
+
+
                 <div class="col-auto">
-                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#create-user-modal" id="btn-open-create-user">
+                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#create-user-modal"
+                        id="btn-open-create-user">
                         + Nuevo Usuario
                     </button>
-                    
+
                 </div>
 
             </div>
@@ -76,12 +93,14 @@
 
                     <div class="mb-3">
                         <label for="create-nombre" class="form-label">Nombre Completo</label>
-                        <input type="text" class="form-control" id="create-nombre" required minlength="3" maxlength="70">
+                        <input type="text" class="form-control" id="create-nombre" required minlength="3"
+                            maxlength="70">
                     </div>
 
                     <div class="mb-3">
                         <label for="create-documento" class="form-label">N° Documento</label>
-                        <input type="text" class="form-control" id="create-documento" required minlength="8" maxlength="20">
+                        <input type="text" class="form-control" id="create-documento" required minlength="8"
+                            maxlength="20">
                     </div>
 
                     <div class="mb-3">
@@ -96,7 +115,8 @@
 
                     <div class="mb-3">
                         <label for="create-telefono" class="form-label">Teléfono</label>
-                        <input type="text" class="form-control" id="create-telefono" required minlength="7" maxlength="15">
+                        <input type="text" class="form-control" id="create-telefono" required minlength="7"
+                            maxlength="15">
                     </div>
 
                     <div class="mb-3">
