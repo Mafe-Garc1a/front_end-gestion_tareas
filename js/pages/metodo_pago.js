@@ -16,22 +16,20 @@ function createMetodoPagoRow(metodo) {
 
   return `
     <tr>
-      <td class="px-0 text-center">${metodoId}</td>
-      <td class="px-0">${metodo.nombre}</td>
-      <td class="px-0">${metodo.descripcion}</td>
+      <td class="cell">${metodoId}</td>
+      <td class="cell">${metodo.nombre}</td>
+      <td class="cell">${metodo.descripcion}</td>
 
-      <td class="px-0 text-center">
-        <div class="form-check form-switch">
-          <input 
-            class="form-check-input metodo-status-switch"
-            type="checkbox"
+      <td class="cell">
+        <div class="form-check form-switch d-inline-block">
+          <input class="form-check-input metodo-status-switch" type="checkbox"
             data-metodo-id="${metodoId}"
             ${metodo.estado ? "checked" : ""}
           >
         </div>
       </td>
 
-      <td class="px-0 text-center">
+      <td class="cell">
         <button class="btn btn-sm btn-info btn-edit-metodo" data-metodo-id="${metodoId}">
           <i class="fa-regular fa-pen-to-square"></i>
         </button>
@@ -372,3 +370,4 @@ function applyFilter() {
     ? filteredMetodos.map(createMetodoPagoRow).join('')
     : '<tr><td colspan="5" class="text-center">No hay métodos que coincidan.</td></tr>';
 }
+
