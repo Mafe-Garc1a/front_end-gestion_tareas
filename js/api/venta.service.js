@@ -72,6 +72,11 @@ export const ventaService = {
         });
     },
 
+    getDetallesVenta: (id_venta)=>{
+        const endpoint = `/ventas/all-detalles-by-id?venta_id=${id_venta}`; 
+        return request(endpoint); 
+    },
+
     // Aquí podrías añadir más servicios
     getMetodosPago: () => {
         const endpoint = `/metodo_pago/all-metodosPago`;
