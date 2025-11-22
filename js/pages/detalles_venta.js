@@ -413,7 +413,11 @@ export const init = () => {
             // localStorage.clear(); 
             
             // console.log("LocalStorage limpiado");
-            
+           Swal.fire({
+                icon: 'success',
+                title: 'Venta guardada con exito',
+                text: 'Detalles añadidos exitosamente'
+            });
             const pageToLoad = button_guardar_venta.dataset.page;
             console.log(`Navegando a: ${pageToLoad}`);
             
