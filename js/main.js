@@ -29,6 +29,8 @@ export const loadContent = async (page) => {
       import('./pages/ventas.js').then(ventaModule => ventaModule.init());
     }else if (page === 'detalles_venta'){
       import('./pages/detalles_venta.js').then(ventaDetalleModule => ventaDetalleModule.init());
+    }else if(page === 'info_venta') {
+      import('./pages/info_venta.js').then(infoVentaModule => infoVentaModule.init());
     }
     // Agregar más módulos según sea necesario
 

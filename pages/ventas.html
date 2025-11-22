@@ -1,51 +1,55 @@
-<div class="row g-3 mb-4 align-items-center justify-content-between">
-    <div class="col-auto">
-        <h1 class="app-page-title mb-0">Ventas</h1>
-    </div>
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <div class="d-md-flex align-items-center">
+                    <div>
+                        <h4 class="card-title">Ventas</h4>
+                    </div>
+                    <div class="ms-auto mt-3 mt-md-0">
+                        <select id="filter-estado"
+                            class="form-select form-select-sm rounded border-secondary shadow-sm bg-white me-2"
+                            style="width: auto; display: inline-block;">
+                            <option value="all">Todos</option>
+                            <option value="active">Activos</option>
+                            <option value="inactive">Inactivos</option>
+                        </select>
 
-    <div class="col-auto">
-        <div class="page-utilities">
-            <div class="row g-2 justify-content-start justify-content-md-end align-items-center">
-                <div class="col-auto">
-                    
+                        <select id="filter-tipo"
+                            class="form-select form-select-sm rounded border-secondary shadow-sm bg-white me-2"
+                            style="width: auto; display: inline-block;">
+                            <option value="all">Todos los tipos</option>
+                        </select>
+
+                        <select id="filter-galpon"
+                            class="form-select form-select-sm rounded border-secondary shadow-sm bg-white me-2"
+                            style="width: auto; display: inline-block;">
+                            <option value="all">Todos los galpones</option>
+                        </select>
+                        <!-- Boton crear venta -->
+                        <button type="button" id="btnCreateVenta" class="btn btn-success" data-page="detalles_venta">
+                            <i class="fa fa-plus me-1"></i>Agregar</button>
+                        </button>
+                    </div>
                 </div>
-
-                <!-- <div class="col-auto">
-                    <select class="form-select w-auto" id="filter-estado">
-                        <option selected value="all">Todos</option>
-                        <option value="active">Activos</option>
-                        <option value="inactive">Inactivos</option>
-                    </select>
-                </div> -->
-
-                <div class="col-auto">
-                    <button id="btnCreateVenta" class="btn btn-primary" data-page="detalles_venta">
-                        + Nueva venta
-                    </button>
+                <div class="table-responsive mt-4">
+                    <table class="table table-striped table-hover table-sm mb-0 text-nowrap align-middle">
+                        <thead>
+                            <tr>
+                                <th scope="col" class="fw-semibold">ID</th>
+                                <th scope="col" class="fw-semibold">Fecha hora</th>
+                                <th scope="col" class="fw-semibold">Vendedor</th>
+                                <th scope="col" class="fw-semibold">Metodo pago</th>
+                                <th scope="col" class="fw-semibold">Total</th>
+                                <th scope="col" class="fw-semibold">Estado</th>
+                                <th scope="col" class="fw-semibold">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="ventas-table-body">
+                        </tbody>
+                    </table>
                 </div>
             </div>
-        </div>
-    </div>
-</div>
-
-<div class="app-card app-card-orders-table shadow-sm mb-5">
-    <div class="app-card-body">
-        <div class="table-responsive">
-            <table class="table app-table-hover mb-0 text-left">
-                <thead>
-                    <tr>
-                        <th class="cell">ID</th>
-                        <th class="cell">Fecha hora</th>
-                        <th class="cell">Vendedor</th>
-                        <th class="cell">Metodo pago</th>
-                        <th class="cell">Total</th>
-                        <th class="cell">Estado</th>
-                        <th class="cell">Acciones</th>
-                    </tr>
-                </thead>
-                <tbody id="ventas-table-body">
-                </tbody>
-            </table>
         </div>
     </div>
 </div>
@@ -53,7 +57,6 @@
     <ul class="pagination justify-content-center" id="pagination-list">
     </ul>
 </nav>
-
 
 
 <!-- NO se usa modal para crear, sino que reedirige a otra pagina -->
@@ -72,13 +75,13 @@
                     <input type="hidden" id="edit-venta-id">
                     <div class="mb-3">
                         <label for="edit-tipo-pago" class="form-label">Metodo pago</label>
-                        <select class="form-select" id="edit-tipo-pago" required>
+                        <select class="form-select form-select-sm rounded border-secondary shadow-sm bg-white" id="edit-tipo-pago" required>
                             <option value="">Seleccione un método de pago</option>
                         </select>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                        <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                        <button type="submit" class="btn btn-success">Guardar Cambios</button>
                     </div>
                 </form>
             </div>
