@@ -150,10 +150,9 @@ function calcularTotal(detalles){
     let totalVenta = 0;
     let totalDescuento = 0;
     detalles.forEach(producto => {
-        let descuento = (producto.precio_venta * producto.valor_descuento) / 100;
-        let subtotal = (producto.precio_venta - descuento) * producto.cantidad;
+        let subtotal = (producto.precio_venta - producto.valor_descuento) * producto.cantidad;
         totalVenta += subtotal;
-        totalDescuento += descuento * producto.cantidad;
+        totalDescuento += producto.valor_descuento * producto.cantidad;
     });
     const descuentoElement = document.getElementById('tot-descuento');
     descuentoElement.textContent = `$${totalDescuento.toLocaleString('es-CO')}`;
