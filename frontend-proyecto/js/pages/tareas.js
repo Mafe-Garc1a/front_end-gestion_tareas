@@ -1,83 +1,93 @@
 // pages/tareas.js
-// aca importamos  lo que se comunica con la api , es decir rutas
+// Importamos lo que se comunica con la API
 import { tareaService } from "../api/tareas.service.js";
-// guardar instancias para avbrir y cerrar modales
+
+// Instancias de modales
 let createModalInst = null;
 let editModalInst = null;
-// esto es para que  almacene todas las tareas 
-let cachedTareas = []; // lista actual de tareas cargadas (página actual)
+
+// Caché de tareas
+let cachedTareas = [];
 let currentPage = 1;
 let pageSize = 10;
 let totalPages = 1;
 
-//  obtener usuario desde localStorage ( objeto user almacenado)
+// Obtener usuario desde localStorage
 function getCurrentUser() {
-  // lee el json del usuario guardado en el localstore
   const s = localStorage.getItem("user");
   if (!s) return null;
   try {
-    // si se ejecuta convierte ese jd¿son a un objeto
     return JSON.parse(s);
   } catch (err) {
     console.error("Error parseando user desde localStorage:", err);
     return null;
   }
 }
-// lo que hace es convertir  l fecha a formato que trae el inout
+
+// Convierte fecha a formato aceptado por datetime-local
 function formatDateInputToLocalDatetime(value) {
-  console.log("hola")
   if (!value) return "";
-  // una fecha  que js puede leer
   const d = new Date(value);
   if (isNaN(d)) return "";
-  // pad añade un 0 en las fechas | ej:05
-  // y devuelve todo formateado
   const pad = (n) => String(n).padStart(2, "0");
   return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
 }
-// convierte la fecha en algo legible usando el formato de colombia
+
+// Convierte fecha a formato bonito con toLocaleString
 function formatDateDisplay(value) {
   if (!value) return "";
   const d = new Date(value);
   if (isNaN(d)) return value;
-  // se devuelve fecha bonita
   return d.toLocaleString("es-CO");
 }
 
+/* ---------------------------------------------------
+   FILA DE TABLA (AQUÍ SE HICIERON LOS CAMBIOS DE ESTILOS)
+--------------------------------------------------- */
 function createTareaRow(t) {
   return `
     <tr data-id_tarea="${t.id_tarea}">
-      <td class="px-0">${t.id_tarea}</td>
-      <td class="px-0">${t.id_usuario}</td>
-      <td class="px-0">${t.descripcion}</td>
-      <td class="px-0">${formatDateDisplay(t.fecha_hora_init)}</td>
-      <td class="px-0">${t.fecha_hora_fin ? formatDateDisplay(t.fecha_hora_fin) : "-"}</td>
-      <td class="px-0"><span class="badge bg-secondary">${t.estado}</span></td>
-      <td class="px-0 text-end">
-        <div class="btn-group" role="group">
-          <button class="btn btn-sm btn-info btn-edit" data-id="${t.id_tarea}" title="Editar"><i class="fa-regular fa-pen-to-square"></i></button>
-        </div>
+      <td class="cell">${t.id_tarea}</td>
+      <td class="cell">${t.id_usuario}</td>
+      <td class="cell">${t.descripcion}</td>
+      <td class="cell">${formatDateDisplay(t.fecha_hora_init)}</td>
+      <td class="cell">${t.fecha_hora_fin ? formatDateDisplay(t.fecha_hora_fin) : "-"}</td>
+      <td class="cell">
+        <span class="app-badge app-badge-secondary">${t.estado}</span>
+      </td>
+      <td class="cell text-end">
+        <button 
+          class="btn app-btn-secondary btn-sm btn-edit"
+          data-id="${t.id_tarea}"
+          title="Editar">
+          <i class="fa-regular fa-pen-to-square"></i>
+        </button>
       </td>
     </tr>
   `;
 }
 
+/* ---------------------------------------------------
+   CARGAR LISTADO DE TAREAS
+--------------------------------------------------- */
 async function loadPage(page = 1) {
   currentPage = page;
+
   const tbody = document.getElementById("tareas-table-body");
   if (!tbody) {
-    console.error("No se encontró tarea en el DOM.");
+    console.error("No se encontró #tareas-table-body en el DOM.");
     return;
   }
+
   tbody.innerHTML = `<tr><td colspan="7" class="text-center">Cargando...</td></tr>`;
-  // se recupera usuario actual para ver permisos
+
   const user = getCurrentUser();
   if (!user) {
     tbody.innerHTML = `<tr><td colspan="7" class="text-center text-danger">Usuario no autenticado.</td></tr>`;
     return;
   }
 
-  // compruebo existencia)
+  // Filtros
   const estadoEl = document.getElementById("filter-estado");
   const fechaIniEl = document.getElementById("filter-fecha-inicio");
   const fechaFinEl = document.getElementById("filter-fecha-fin");
@@ -89,25 +99,23 @@ async function loadPage(page = 1) {
   const search = searchEl ? (searchEl.value || "").toLowerCase() : "";
 
   try {
-    // para capturar errores
     let responseData = null;
 
-    //  usamos GET /usuario/{id_usuario} para que no devuelva otras tareas y solo las de usuario
+    // Si es operario (rol 4), solo ver sus tareas
     if (user.id_rol === 4) {
       const tareas = await tareaService.getByUser(user.id_usuario);
-      // Aseguramos que tareas sea un array
       const arr = Array.isArray(tareas) ? tareas : [];
-      // se pagina manualmente ya que al obtener por id las tareas de ese usuario
+
       responseData = {
         page,
-        page_size: arr.length || 0,
-        total_tareas: arr.length || 0,
+        page_size: arr.length,
+        total_tareas: arr.length,
         total_pages: 1,
         tareas: arr,
       };
+
     } else {
-      // si es otro rol muestra la info paginada
-      // paginado: usamos endpoint pag y el wait espera que la promesa se ejecute antes de seguir
+      // Si no es operario → paginación normal y filtro desde backend
       const pagResp = await tareaService.getPaginated({
         page,
         page_size: pageSize,
@@ -115,44 +123,44 @@ async function loadPage(page = 1) {
         fecha_fin: fechaFin || undefined,
       });
 
-      // pagResp debe contener { tareas: [...], total_tareas, total_pages }
       responseData = pagResp || { tareas: [], total_tareas: 0, total_pages: 1 };
     }
-    // toma las tareas guardadas para luego poder editarlas
+
     const tareasList = responseData.tareas || [];
     cachedTareas = tareasList;
 
-    // aplicar filtros 
+    /* FILTROS EN CLIENTE */
     let filtered = tareasList;
+
     if (estadoFilter && estadoFilter !== "all") {
       filtered = filtered.filter((t) => String(t.estado) === String(estadoFilter));
     }
-    if (search) { 
-      // convierte todo en minusculas por si escriben en mayuscula y miniscula
-      filtered = filtered.filter((t) => t.descripcion && t.descripcion.toLowerCase().includes(search));
+
+    if (search) {
+      filtered = filtered.filter((t) =>
+        t.descripcion && t.descripcion.toLowerCase().includes(search)
+      );
     }
-    console.log("hola")
-    // paginación cliente si endpoint devolvió todo (solo ocurre para operarios ) decide si se muestra o no 
-    let displayed = filtered; 
+
+    /* PAGINACIÓN CLIENTE SI ES OPERARIO */
+    let displayed = filtered;
+
     if (user.id_rol === 4) {
       totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
       const start = (page - 1) * pageSize;
-      // se utiliza para paginaciomn un inicio y fin
       displayed = filtered.slice(start, start + pageSize);
     } else {
-      totalPages = responseData.total_pages || Math.max(1, Math.ceil((responseData.total_tareas || filtered.length) / pageSize));
+      totalPages = responseData.total_pages || 1;
     }
-    // si no  hay tareas muestra mensajes
+
+    /* LISTA FINAL */
     if (!displayed || displayed.length === 0) {
       tbody.innerHTML = `<tr><td colspan="7" class="text-center">No se encontraron tareas.</td></tr>`;
     } else {
-      // mapo convierte una fila en listas de textos
       tbody.innerHTML = displayed.map(createTareaRow).join("");
     }
 
     renderPagination(currentPage, totalPages);
-
-    // permisos UI: si operario ocultar botón crear si no puede
     applyUiPermissions(user);
 
   } catch (err) {
@@ -161,31 +169,38 @@ async function loadPage(page = 1) {
   }
 }
 
+/* ---------------------------------------------------
+   PAGINACIÓN (clases ya son las correctas)
+--------------------------------------------------- */
 function renderPagination(page, pages) {
   const list = document.getElementById("pagination-list");
   if (!list) return;
+
   list.innerHTML = "";
 
   const createPageItem = (p, text = null, active = false, disabled = false) => {
-    return `<li class="page-item ${active ? "active" : ""} ${disabled ? "disabled" : ""}">
-      <a class="page-link" href="#" data-page="${p}">${text ?? p}</a>
-    </li>`;
+    return `
+      <li class="page-item ${active ? "active" : ""} ${disabled ? "disabled" : ""}">
+        <a class="page-link" href="#" data-page="${p}">${text ?? p}</a>
+      </li>
+    `;
   };
 
-  // prev
   list.insertAdjacentHTML("beforeend", createPageItem(Math.max(1, page - 1), "«", false, page <= 1));
 
-  // páginas (mostrar hasta 5)
   const start = Math.max(1, page - 2);
   const end = Math.min(pages, page + 2);
+
   for (let p = start; p <= end; p++) {
     list.insertAdjacentHTML("beforeend", createPageItem(p, null, p === page));
   }
 
-  // next
   list.insertAdjacentHTML("beforeend", createPageItem(Math.min(pages, page + 1), "»", false, page >= pages));
 }
 
+/* ---------------------------------------------------
+   PERMISOS UI
+--------------------------------------------------- */
 function applyUiPermissions(user) {
   const btnCreate = document.getElementById("btn-open-create");
   if (!btnCreate) return;
@@ -196,15 +211,15 @@ function applyUiPermissions(user) {
     btnCreate.style.display = "inline-block";
   }
 
-  // Mostrar/ocultar botones de editar según rol (actualizamos después de render)
   const canEdit = user.id_rol !== 4;
   document.querySelectorAll(".btn-edit").forEach(btn => {
     btn.style.display = canEdit ? "inline-block" : "none";
   });
 }
 
-/* ---------- EVENT HANDLERS ---------- */
-
+/* ---------------------------------------------------
+   EVENTOS
+--------------------------------------------------- */
 function handleTableClick(e) {
   const btn = e.target.closest ? e.target.closest(".btn-edit") : null;
   if (!btn) return;
@@ -228,24 +243,24 @@ function handleSearchInput() {
   loadPage(1);
 }
 
-/* ---------- MODALES: crear / editar ---------- */
-
+/* ---------------------------------------------------
+   MODALES (sin cambios de estilos)
+--------------------------------------------------- */
 function initModals() {
   try {
     const createEl = document.getElementById("create-tarea-modal");
     const editEl = document.getElementById("edit-tarea-modal");
+
     if (createEl) createModalInst = new bootstrap.Modal(createEl);
     if (editEl) editModalInst = new bootstrap.Modal(editEl);
 
     const btnOpen = document.getElementById("btn-open-create");
     if (btnOpen) {
-      // si bootstrap está cargado, usar Modal.show(); si no, dejamos que data-bs-* abra el modal si el botón lo tiene
       btnOpen.addEventListener("click", () => {
         if (createModalInst) createModalInst.show();
       });
     }
 
-    // crear -> submit
     const createForm = document.getElementById("create-tarea-form");
     if (createForm) {
       createForm.addEventListener("submit", async (ev) => {
@@ -255,7 +270,9 @@ function initModals() {
             id_usuario: parseInt(document.getElementById("create-id_usuario").value, 10),
             descripcion: document.getElementById("create-descripcion").value,
             fecha_hora_init: new Date(document.getElementById("create-fecha_hora_init").value).toISOString(),
-            fecha_hora_fin: document.getElementById("create-fecha_hora_fin").value ? new Date(document.getElementById("create-fecha_hora_fin").value).toISOString() : null,
+            fecha_hora_fin: document.getElementById("create-fecha_hora_fin").value 
+              ? new Date(document.getElementById("create-fecha_hora_fin").value).toISOString() 
+              : null,
             estado: document.getElementById("create-estado").value
           };
           await tareaService.create(newData);
@@ -270,7 +287,6 @@ function initModals() {
       });
     }
 
-    // editar -> submit
     const editForm = document.getElementById("edit-tarea-form");
     if (editForm) {
       editForm.addEventListener("submit", async (ev) => {
@@ -281,7 +297,9 @@ function initModals() {
             id_usuario: parseInt(document.getElementById("edit-id_usuario").value, 10),
             descripcion: document.getElementById("edit-descripcion").value,
             fecha_hora_init: new Date(document.getElementById("edit-fecha_hora_init").value).toISOString(),
-            fecha_hora_fin: document.getElementById("edit-fecha_hora_fin").value ? new Date(document.getElementById("edit-fecha_hora_fin").value).toISOString() : null,
+            fecha_hora_fin: document.getElementById("edit-fecha_hora_fin").value
+              ? new Date(document.getElementById("edit-fecha_hora_fin").value).toISOString()
+              : null,
             estado: document.getElementById("edit-estado").value
           };
           await tareaService.updateById(id, data);
@@ -299,13 +317,16 @@ function initModals() {
   }
 }
 
-/* Abrir modal editar usando cache (no hay endpoint GET /{id}) */
+/* ---------------------------------------------------
+   EDITAR DESDE CACHÉ
+--------------------------------------------------- */
 function openEditModalFromCache(id_tarea) {
   const t = cachedTareas.find(x => x.id_tarea === id_tarea);
   if (!t) {
     alert("No se encontró la tarea para editar (recarga la página).");
     return;
   }
+
   const setIf = (id, value) => {
     const el = document.getElementById(id);
     if (el) el.value = value ?? "";
@@ -321,17 +342,22 @@ function openEditModalFromCache(id_tarea) {
   if (editModalInst) editModalInst.show();
 }
 
-/* ---------- EXPORT CSV ---------- */
+/* ---------------------------------------------------
+  EXPORTAR CSV
+--------------------------------------------------- */
 function exportToCsv(rows, filename = "tareas.csv") {
   if (!rows || rows.length === 0) return alert("No hay datos para exportar.");
+
   const header = Object.keys(rows[0]);
   const csv = [
     header.join(","),
-    ...rows.map(r => header.map(h => {
-      const v = r[h] ?? "";
-      const safe = String(v).replace(/"/g, '""');
-      return `"${safe}"`;
-    }).join(","))
+    ...rows.map((r) =>
+      header.map((h) => {
+        const v = r[h] ?? "";
+        const safe = String(v).replace(/"/g, '""');
+        return `"${safe}"`;
+      }).join(",")
+    ),
   ].join("\r\n");
 
   const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
@@ -343,7 +369,9 @@ function exportToCsv(rows, filename = "tareas.csv") {
   document.body.removeChild(link);
 }
 
-/* ---------- INIT ---------- */
+/* ---------------------------------------------------
+  INIT
+--------------------------------------------------- */
 function attachEvents() {
   const pagList = document.getElementById("pagination-list");
   if (pagList) pagList.addEventListener("click", handlePaginationClick);
@@ -375,7 +403,9 @@ export function init() {
   loadPage(1);
 }
 
-/* ---------- UTIL ---------- */
+/* ---------------------------------------------------
+ UTIL
+--------------------------------------------------- */
 function debounce(fn, ms = 300) {
   let t;
   return (...args) => {
@@ -383,6 +413,3 @@ function debounce(fn, ms = 300) {
     t = setTimeout(() => fn(...args), ms);
   };
 }
-
-
-
