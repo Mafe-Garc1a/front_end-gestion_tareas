@@ -387,10 +387,11 @@ async function init() {
   createForm.addEventListener('submit', handleCreateSubmit);
 
   // <<<------ EXPORT HOOK ----->>>
-  const pageUtilities = document.querySelector(".page-utilities");
-  if (pageUtilities) {
-    pageUtilities.removeEventListener("click", handleExportClick);
-    pageUtilities.addEventListener("click", handleExportClick);
+  const exportDropdownMenu = document.querySelector("#export-btn + .dropdown-menu");
+
+  if (exportDropdownMenu) {
+    exportDropdownMenu.removeEventListener("click", handleExportClick);
+    exportDropdownMenu.addEventListener("click", handleExportClick);
   }
 }
 
