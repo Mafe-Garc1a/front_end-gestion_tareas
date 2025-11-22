@@ -149,6 +149,7 @@ function createDetalles() {
 }
 
 async function imprimirDetalles(){
+    const tableBody = document.getElementById('detalles-table-body');
     tableBody.innerHTML = '';
 
     let detalles = await detalleVentaService.getDettallesVenta(idVentaReciente);
