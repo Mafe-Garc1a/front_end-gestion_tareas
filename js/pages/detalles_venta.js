@@ -46,19 +46,19 @@ function mostrarInformacionVenta(ventaData) {
     container.innerHTML = `
         <div class="d-flex flex-column">
             <label class="form-label fw-semibold mb-1">Vendedor</label>
-            <p class="mb-0 form-control bg-light">${ventaData.nombre_usuario}</p>
+            <p class="mb-0 form-control-sm border-secondary border shadow-sm bg-white bg-light">${ventaData.nombre_usuario}</p>
         </div>
         <div class="d-flex flex-column">
             <label class="form-label fw-semibold mb-1">Fecha</label>
-            <p class="mb-0 form-control bg-light">${fecha}</p>
+            <p class="mb-0 form-control-sm border-secondary border shadow-sm bg-white bg-light">${fecha}</p>
         </div>
         <div class="d-flex flex-column">
             <label class="form-label fw-semibold mb-1">Método de Pago</label>
-            <p class="mb-0 form-control bg-light">${ventaData.metodo_pago}</p>
+            <p class="mb-0 form-control-sm border-secondary border shadow-sm bg-white bg-light">${ventaData.metodo_pago}</p>
         </div>
         <div class="d-flex flex-column">
             <label class="form-label fw-semibold mb-1">ID Venta</label>
-            <p class="mb-0 form-control bg-light">#${ventaData.id_venta}</p>
+            <p class="mb-0 form-control-sm border-secondary border shadow-sm bg-white bg-light">#${ventaData.id_venta}</p>
         </div>
         <!-- 
         <div class="d-flex flex-column justify-content-end">
@@ -100,14 +100,21 @@ function createDetalles() {
             return;
         }
 
+        let descuentoPesos = (precioVenta * valorDescuento)/100; 
         const detallesData = {
             id_producto: idProducto.value,
             cantidad: cantidad,
             id_venta: idVentaReciente, 
-            valor_descuento: valorDescuento,
+            valor_descuento: descuentoPesos,
             precio_venta: precioVenta
         };
-
+        const swalWithBootstrapButtonsCreateDetalle = Swal.mixin({
+            customClass: {
+                confirmButton: "btn btn-success ms-2",
+                cancelButton: "btn btn-danger"
+            },
+            buttonsStyling: false
+        });
         try {
             botonAgregar.disabled = true;
             botonAgregar.textContent = 'Agregando...';
@@ -128,6 +135,11 @@ function createDetalles() {
         } catch (error) {
             console.error("Error:", error);
             alert('Error al agregar el producto: ' + error.message);
+            await swalWithBootstrapButtonsCreateDetalle.fire({
+                title: "Error",
+                text: error,
+                icon: "error"
+            });
 
         } finally {
             botonAgregar.disabled = false;
@@ -166,13 +178,13 @@ async function imprimirDetalles(){
         botonEdit.setAttribute('data-id-producto', element.id_producto);
         botonEdit.setAttribute('data-tipo-producto', element.tipo);
         botonEdit.setAttribute('data-detalle-id', element.id_detalle);
-        botonEdit.innerHTML = '<i class="fa-regular fa-pen-to-square">';
+        botonEdit.innerHTML = '<i class="fa fa-pen me-0"></i>';
 
         const botonDelete = document.createElement('button');
-        botonDelete.classList.add('btn', 'btn-danger', 'btn-sm', 'ms-2', 'btn-delete-detalle');
+        botonDelete.classList.add('btn', 'btn-secondary', 'btn-sm', 'ms-2', 'btn-delete-detalle');
         botonDelete.setAttribute('data-tipo-producto', element.tipo);
         botonDelete.setAttribute('data-detalle-id', element.id_detalle);
-        botonDelete.innerHTML = '<i class="fa-solid fa-trash-can"></i>';
+        botonDelete.innerHTML = '<i class="fa fa-trash me-0">';
 
         colAcciones.appendChild(botonEdit);
         colAcciones.appendChild(botonDelete);
@@ -193,10 +205,9 @@ function calcularTotal(detalles){
     let totalVenta = 0;
     let totalDescuento = 0;
     detalles.forEach(producto => {
-        let descuento = (producto.precio_venta * producto.valor_descuento) / 100;
-        let subtotal = (producto.precio_venta - descuento) * producto.cantidad;
+        let subtotal = (producto.precio_venta - producto.valor_descuento) * producto.cantidad;
         totalVenta += subtotal;
-        totalDescuento += descuento * producto.cantidad;
+        totalDescuento += producto.valor_descuento * producto.cantidad;
     });
     const descuentoElement = document.getElementById('total-descuento');
     descuentoElement.textContent = `$${totalDescuento.toLocaleString('es-CO')}`;
@@ -402,7 +413,11 @@ export const init = () => {
             // localStorage.clear(); 
             
             // console.log("LocalStorage limpiado");
-            
+           Swal.fire({
+                icon: 'success',
+                title: 'Venta guardada con exito',
+                text: 'Detalles añadidos exitosamente'
+            });
             const pageToLoad = button_guardar_venta.dataset.page;
             console.log(`Navegando a: ${pageToLoad}`);
             
