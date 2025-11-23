@@ -16,25 +16,25 @@ function createMetodoPagoRow(metodo) {
 
   return `
     <tr>
-      <td class="px-0 text-center">${metodoId}</td>
-      <td class="px-0">${metodo.nombre}</td>
-      <td class="px-0">${metodo.descripcion}</td>
+      <td class="cell">${metodoId}</td>
+      <td class="cell">${metodo.nombre}</td>
+      <td class="cell">${metodo.descripcion}</td>
 
-      <td class="px-0 text-center">
-        <div class="form-check form-switch">
-          <input 
-            class="form-check-input metodo-status-switch"
-            type="checkbox"
+      <td class="cell">
+        <div class="form-check form-switch d-inline-block">
+          <input class="form-check-input metodo-status-switch" type="checkbox"
             data-metodo-id="${metodoId}"
             ${metodo.estado ? "checked" : ""}
           >
         </div>
       </td>
 
-      <td class="px-0 text-center">
-        <button class="btn btn-sm btn-info btn-edit-metodo" data-metodo-id="${metodoId}">
-          <i class="fa-regular fa-pen-to-square"></i>
+      <td class="cell text-end">
+      <div class="d-flex justify-content-end gap-2">
+        <button class="btn btn-sm btn-success btn-edit-metodo" data-metodo-id="${metodoId}">
+          <i class="fa fa-pen"></i>
         </button>
+      </div>
       </td>
     </tr>
   `;
@@ -174,7 +174,11 @@ async function openEditModal(id) {
     modalInstance.show();
   } catch (error) {
     console.error(`Error al obtener método de pago ${id}:`, error);
-    alert('No se pudieron cargar los datos del método de pago.');
+    Swal.fire({
+      icon: "error",
+      title: "Error",
+      text: "No se pudieron cargar los datos del método de pago.",
+    });
   }
 }
 
@@ -190,20 +194,46 @@ async function handleUpdateSubmit(event) {
   const metodoId = document.getElementById('edit-metodo_pago-id').value;
 
   const updatedData = {
-    nombre: document.getElementById('edit-nombre').value,
-    descripcion: document.getElementById('edit-descripcion').value,
+    nombre: document.getElementById('edit-nombre').value.trim(),
+    descripcion: document.getElementById('edit-descripcion').value.trim(),
   };
+
+
+  if (!updatedData.nombre || updatedData.nombre.length < 3) {
+    Swal.fire({
+      icon: "error",
+      title: "Nombre inválido",
+      text: "El nombre debe tener al menos 3 caracteres válidos.",
+    });
+    return;
+  }
 
   try {
     await metodoPagoService.updateMetodoPago(metodoId, updatedData);
     modalInstance.hide();
+    Swal.fire({
+      icon: "success",
+      title: "Éxito",
+      text: "Método de pago actualizado exitosamente.",
+    });
     await init();  
     applyFilter();
   } catch (error) {
-    console.error(`Error al actualizar método de pago ${metodoId}:`, error);
-    alert('No se pudo actualizar el método de pago.');
+    if (error.message == "El nombre del método de pago ya existe.") {
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: "El nombre del método de pago ya está registrado. Por favor, use otro nombre.",
+    });
+      return;
+    }
+
+
+    console.error('Error al actualizar método de pago:', error);
+   
   }
 }
+
 
 async function handleTableClick(event) {
   const editButton = event.target.closest('.btn-edit-metodo');
@@ -221,20 +251,48 @@ async function handleStatusSwitch(event) {
   const metodoId = switchElement.dataset.metodoId;
   const newStatus = switchElement.checked;
 
-  const actionText = newStatus ? 'activar' : 'desactivar';
+  const actionText = newStatus ? "activar" : "desactivar";
 
-  if (confirm(`¿Estás seguro de que deseas ${actionText} este método de pago?`)) {
-    try {
-      await metodoPagoService.changeMetodoPagoStatus(metodoId, newStatus);
-      alert(`Método de pago ${newStatus ? 'activado' : 'desactivado'} exitosamente.`);
-      await init();
-      applyFilter();
-    } catch (error) {
-      console.error(`Error al ${actionText} método de pago ${metodoId}:`, error);
-      alert(`No se pudo ${actionText} el método de pago.`);
-      switchElement.checked = !newStatus;
-    }
-  } else {
+  // SweetAlert de confirmación
+  const result = await Swal.fire({
+    title: `¿Estás seguro?`,
+    text: `¿Deseas ${actionText} este método de pago?`,
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonColor: "#28a745",
+    cancelButtonColor: "#d33",
+    confirmButtonText: `Sí, ${actionText}`,
+    cancelButtonText: "Cancelar",
+  });
+
+  if (!result.isConfirmed) {
+    switchElement.checked = !newStatus; // revertir
+    return;
+  }
+
+  try {
+    await metodoPagoService.changeMetodoPagoStatus(metodoId, newStatus);
+
+    await Swal.fire({
+      icon: "success",
+      title: "Éxito",
+      text: `Método de pago ${newStatus ? "activado" : "desactivado"} exitosamente.`,
+      timer: 1500,
+      showConfirmButton: false,
+    });
+
+    await init();
+    applyFilter();
+
+  } catch (error) {
+    console.error(`Error al ${actionText} el método de pago ${metodoId}:`, error);
+
+    await Swal.fire({
+      icon: "error",
+      title: "Error",
+      text: `No se pudo ${actionText} el método de pago.`,
+    });
+
     switchElement.checked = !newStatus;
   }
 }
@@ -249,10 +307,20 @@ async function handleCreateSubmit(event) {
   event.preventDefault();
 
   const newMetodoData = {
-    nombre: document.getElementById('create-nombre').value,
-    descripcion: document.getElementById('create-descripcion').value,
+    nombre: document.getElementById('create-nombre').value.trim(),
+    descripcion: document.getElementById('create-descripcion').value.trim(),
     estado: true
   };
+
+
+  if (!newMetodoData.nombre || newMetodoData.nombre.length < 3) {
+    Swal.fire({
+      icon: "error",
+      title: "Nombre inválido",
+      text: "El nombre debe tener al menos 3 caracteres válidos.",
+    });
+    return;
+  }
 
   try {
     await metodoPagoService.createMetodoPago(newMetodoData);
@@ -262,15 +330,28 @@ async function handleCreateSubmit(event) {
     createModalInstance.hide();
   }
     document.getElementById('create-metodo_pago-form').reset();
-    alert('Método de pago creado exitosamente.');
+    Swal.fire({
+      icon: "success",
+      title: "Éxito",
+      text: "Método de pago creado exitosamente.",
+    });
     await init();
     applyFilter();
   } catch (error) {
+    if (error.message == "El nombre del método de pago ya existe.") {
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: "El nombre del método de pago ya está registrado. Por favor, use otro nombre.",
+    });
+      return;
+    }
+
+
     console.error('Error al crear método de pago:', error);
-    alert('No se pudo crear el método de pago.');
+    
   }
 }
-
 
 
 // -----------------------------------------------------
@@ -326,10 +407,11 @@ async function init() {
   createForm.addEventListener('submit', handleCreateSubmit);
 
   // <<<------ EXPORT HOOK ----->>>
-  const pageUtilities = document.querySelector(".page-utilities");
-  if (pageUtilities) {
-    pageUtilities.removeEventListener("click", handleExportClick);
-    pageUtilities.addEventListener("click", handleExportClick);
+  const exportDropdownMenu = document.querySelector("#export-btn + .dropdown-menu");
+
+  if (exportDropdownMenu) {
+    exportDropdownMenu.removeEventListener("click", handleExportClick);
+    exportDropdownMenu.addEventListener("click", handleExportClick);
   }
 }
 
@@ -358,46 +440,6 @@ function applyFilter() {
 
   tableBody.innerHTML = filteredMetodos.length
     ? filteredMetodos.map(createMetodoPagoRow).join('')
-    : '<tr><td colspan="5" class="text-center">No hay métodos que coincidan.</td></tr>';
+    : '<tr><td colspan="5" class="text-center">No hay métodos de pago que coincidan.</td></tr>';
 }
 
-
-// Juanda
-
-// async function cargarMetodosPago() {
-//   try {
-//     const metodosPago = await ventaService.getMetodosPago();
-//     console.log(metodosPago);
-
-//     const selectTipoPago = document.getElementById('edit-tipo-pago');
-
-//     
-//     selectTipoPago.innerHTML = '';
-
-//     if (Array.isArray(metodosPago)) {
-
-//       
-//       const activos = metodosPago.filter(m => m.estado === true);
-
-//       if (activos.length === 0) {
-//         selectTipoPago.innerHTML = '<option disabled>No hay métodos de pago activos</option>';
-//         return;
-//       }
-
-//       // Insertar solo los activos
-//       activos.forEach(metodo => {
-//         const option = document.createElement('option');
-//         option.value = metodo.id_tipo;
-//         option.textContent = metodo.nombre;
-//         selectTipoPago.appendChild(option);
-//       });
-
-//     } else {
-//       selectTipoPago.innerHTML = '<option disabled>No se encontraron métodos de pago</option>';
-//     }
-
-//   } catch (error) {
-//     console.error('Error al cargar los métodos de pago:', error);
-//     alert('Error al cargar los métodos de pago.');
-//   }
-// }
