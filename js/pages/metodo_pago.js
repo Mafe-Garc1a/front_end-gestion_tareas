@@ -194,9 +194,19 @@ async function handleUpdateSubmit(event) {
   const metodoId = document.getElementById('edit-metodo_pago-id').value;
 
   const updatedData = {
-    nombre: document.getElementById('edit-nombre').value,
-    descripcion: document.getElementById('edit-descripcion').value,
+    nombre: document.getElementById('edit-nombre').value.trim(),
+    descripcion: document.getElementById('edit-descripcion').value.trim(),
   };
+
+
+  if (!updatedData.nombre || updatedData.nombre.length < 3) {
+    Swal.fire({
+      icon: "error",
+      title: "Nombre inválido",
+      text: "El nombre debe tener al menos 3 caracteres válidos.",
+    });
+    return;
+  }
 
   try {
     await metodoPagoService.updateMetodoPago(metodoId, updatedData);
@@ -219,7 +229,7 @@ async function handleUpdateSubmit(event) {
     }
 
 
-    console.error('Error al editar el método de pago:', error);
+    console.error('Error al actualizar método de pago:', error);
    
   }
 }
@@ -297,10 +307,20 @@ async function handleCreateSubmit(event) {
   event.preventDefault();
 
   const newMetodoData = {
-    nombre: document.getElementById('create-nombre').value,
-    descripcion: document.getElementById('create-descripcion').value,
+    nombre: document.getElementById('create-nombre').value.trim(),
+    descripcion: document.getElementById('create-descripcion').value.trim(),
     estado: true
   };
+
+
+  if (!newMetodoData.nombre || newMetodoData.nombre.length < 3) {
+    Swal.fire({
+      icon: "error",
+      title: "Nombre inválido",
+      text: "El nombre debe tener al menos 3 caracteres válidos.",
+    });
+    return;
+  }
 
   try {
     await metodoPagoService.createMetodoPago(newMetodoData);
@@ -328,7 +348,7 @@ async function handleCreateSubmit(event) {
     }
 
 
-    console.error('Error al crear el método de pago:', error);
+    console.error('Error al crear método de pago:', error);
     
   }
 }
@@ -420,5 +440,6 @@ function applyFilter() {
 
   tableBody.innerHTML = filteredMetodos.length
     ? filteredMetodos.map(createMetodoPagoRow).join('')
-    : '<tr><td colspan="5" class="text-center">No hay métodos que coincidan.</td></tr>';
+    : '<tr><td colspan="5" class="text-center">No hay métodos de pago que coincidan.</td></tr>';
 }
+
