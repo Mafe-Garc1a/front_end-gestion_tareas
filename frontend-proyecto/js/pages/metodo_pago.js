@@ -32,7 +32,7 @@ function createMetodoPagoRow(metodo) {
       <td class="cell text-end">
       <div class="d-flex justify-content-end gap-2">
         <button class="btn btn-sm btn-success btn-edit-metodo" data-metodo-id="${metodoId}">
-          <i class="fa fa-pen"></i>
+          <i class="fa-regular fa-pen-to-square"></i>
         </button>
       </div>
       </td>
