@@ -47,15 +47,15 @@ function formatDateDisplay(value) {
 function createTareaRow(t) {
   return `
     <tr data-id_tarea="${t.id_tarea}">
-      <td class="px-0">${t.id_tarea}</td>
-      <td class="px-0">${t.id_usuario}</td>
-      <td class="px-0">${t.descripcion}</td>
-      <td class="px-0">${formatDateDisplay(t.fecha_hora_init)}</td>
-      <td class="px-0">${t.fecha_hora_fin ? formatDateDisplay(t.fecha_hora_fin) : "-"}</td>
-      <td class="px-0">
+      <td class="cell">${t.id_tarea}</td>
+      <td class="cell">${t.id_usuario}</td>
+      <td class="cell">${t.descripcion}</td>
+      <td class="cell">${formatDateDisplay(t.fecha_hora_init)}</td>
+      <td class="cell">${t.fecha_hora_fin ? formatDateDisplay(t.fecha_hora_fin) : "-"}</td>
+      <td class="cell">
         <span class="app-badge app-badge-secondary">${t.estado}</span>
       </td>
-      <td class="px-0 text-end">
+      <td class="cell text-end">
         <button 
           class="btn btn-success btn-sm btn-edit"
           data-id="${t.id_tarea}"
