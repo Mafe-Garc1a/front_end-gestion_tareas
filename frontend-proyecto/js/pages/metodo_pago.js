@@ -262,10 +262,9 @@ async function handleStatusSwitch(event) {
     confirmButtonText: `Sí, ${actionText}`,
     cancelButtonText: "Cancelar",
     customClass: {
-      confirmButton: "btn btn-success",   // clase de Bootstrap success
-      cancelButton: "btn btn-secondary"   // clase de Bootstrap secondary
-    },
-    buttonsStyling: false  // Importante para que use tus clases y no sobrescriba estilos
+      confirmButton: "btn-success",   // agrega solo la clase de color
+      cancelButton: "btn-secondary"   // agrega solo la clase de color
+    }
   });
 
 
