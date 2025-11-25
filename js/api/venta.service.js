@@ -83,5 +83,9 @@ export const ventaService = {
         return request(endpoint);
     },
 
+    getVentasByDate: (fechaInicio, fechaFin, page, page_size) => {
+        const endpoint = `/ventas/all-rango-fechas-pag?fecha_inicio=${fechaInicio}&fecha_fin=${fechaFin}&page=${page}&page_size=${page_size}`;
+        return request(endpoint);
+    },
     
 };
