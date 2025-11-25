@@ -259,11 +259,15 @@ async function handleStatusSwitch(event) {
     text: `¿Deseas ${actionText} este método de pago?`,
     icon: "warning",
     showCancelButton: true,
-    confirmButtonColor: "#28a745",
-    cancelButtonColor: "#d33",
     confirmButtonText: `Sí, ${actionText}`,
     cancelButtonText: "Cancelar",
+    customClass: {
+      confirmButton: "btn btn-success",   // clase de Bootstrap success
+      cancelButton: "btn btn-secondary"   // clase de Bootstrap secondary
+    },
+    buttonsStyling: false  // Importante para que use tus clases y no sobrescriba estilos
   });
+
 
   if (!result.isConfirmed) {
     switchElement.checked = !newStatus; // revertir
@@ -442,4 +446,3 @@ function applyFilter() {
     ? filteredMetodos.map(createMetodoPagoRow).join('')
     : '<tr><td colspan="5" class="text-center">No hay métodos de pago que coincidan.</td></tr>';
 }
-
