@@ -373,3 +373,143 @@ async function cargarMetodosPago() {
   }
 };
 
+
+// Export: manejar clicks en el dropdown (CSV / Excel)
+  const pageUtilities = document.querySelector(".page-utilities");
+  if (pageUtilities) {
+    pageUtilities.removeEventListener("click", handleExportClick);
+    pageUtilities.addEventListener("click", handleExportClick);
+  }
+
+function convertToCSV(rows, columns) {
+  const escapeCell = (val) => {
+    if (val === null || val === undefined) return "";
+    const s = String(val);
+    // Escape quotes
+    return `"${s.replace(/"/g, '""')}"`;
+  };
+
+  const header = columns.map((c) => escapeCell(c.header)).join(",");
+  const body = rows
+    .map((row) =>
+      columns
+        .map((c) => {
+          const v = typeof c.key === "function" ? c.key(row) : row[c.key];
+          return escapeCell(v);
+        })
+        .join(",")
+    )
+    .join("\n");
+  return `${header}\n${body}`;
+}
+
+function downloadBlob(content, mimeType, filename) {
+  const blob = new Blob([content], { type: mimeType });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+}
+
+function exportToCSV(data, filename = "ventas.csv") {
+  const columns = [
+    { header: "ID", key: "id_venta" },
+    { header: "fecha_hora", key: "fecha_hora" },
+    { header: "nombre_usuario", key: "nombre_usuario" },
+    { header: "metodo_pago", key: "metodo_pago" },
+    { header: "total", key: "total" },
+    { header: "Estado", key: (r) => (r.estado ? "Activo" : "Inactivo") },
+  ];
+  const csv = convertToCSV(data, columns);
+  downloadBlob(csv, "text/csv;charset=utf-8;", filename);
+}
+
+async function exportToExcel(data, filename = "ventas.xlsx") {
+  // Intentar usar SheetJS (XLSX) para crear un .xlsx real en el navegador.
+  // Si no está cargado, lo cargamos dinámicamente desde CDN.
+  const loadSheetJS = () =>
+    new Promise((resolve, reject) => {
+      if (window.XLSX) return resolve(window.XLSX);
+      const script = document.createElement("script");
+      script.src =
+        "https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js";
+      script.onload = () => resolve(window.XLSX);
+      script.onerror = (e) => reject(new Error("No se pudo cargar SheetJS"));
+      document.head.appendChild(script);
+    });
+
+  try {
+    await loadSheetJS();
+  } catch (err) {
+    console.warn(
+      "SheetJS no disponible, se usará exportación CSV en su lugar",
+      err
+    );
+    // Fallback al CSV con extensión xlsx si falla la carga
+    exportToCSV(data, filename.replace(/\.xlsx?$/, ".csv"));
+    return;
+  }
+
+  // Mapear datos a objetos planos para json_to_sheet
+  const rows = data.map((r) => ({
+    ID: r.id_venta,
+    fecha_hora: r.fecha_hora,
+    vendedor: r.nombre_usuario,
+    metodo_pago: r.metodo_pago,
+    Total: r.total,
+    estado: r.estado ? "Activo" : "Inactivo",
+  }));
+
+  const ws = XLSX.utils.json_to_sheet(rows);
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, "Ventas");
+
+  try {
+    XLSX.writeFile(wb, filename);
+  } catch (e) {
+    // Algunos navegadores / entornos pueden requerir otra ruta: crear blob desde write
+    try {
+      const wbout = XLSX.write(wb, { bookType: "xlsx", type: "array" });
+      const blob = new Blob([wbout], { type: "application/octet-stream" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error("No se pudo generar el archivo .xlsx:", err);
+      Swal.fire({
+        title: "Error al generar .xlsx",
+        text: err.message || String(err),
+        icon: "error",
+      });
+    }
+  }
+}
+
+function handleExportClick(event) {
+  const item = event.target.closest(".export-format");
+  if (!item) return;
+  event.preventDefault();
+  const fmt = item.dataset.format;
+  const dateTag = new Date().toISOString().slice(0, 10);
+  const data = filteredLands && filteredLands.length ? filteredLands : allLands;
+  if (!data || data.length === 0) {
+    Swal.fire({ title: "No hay datos para exportar.", icon: "info" });
+    return;
+  }
+
+  if (fmt === "csv") {
+    exportToCSV(data, `ventas_${dateTag}.csv`);
+  } else if (fmt === "excel") {
+    exportToExcel(data, `ventas_${dateTag}.xls`); 
+  }
+}
+//end export

@@ -15,17 +15,20 @@
                             <option value="inactive">Inactivos</option>
                         </select> -->
 
-                        <!-- <select id="filter-tipo"
-                            class="form-select form-select-sm rounded border-secondary shadow-sm bg-white me-2"
-                            style="width: auto; display: inline-block;">
-                            <option value="all">Todos los tipos</option>
-                        </select> -->
-
-                        <!-- <select id="filter-galpon"
-                            class="form-select form-select-sm rounded border-secondary shadow-sm bg-white me-2"
-                            style="width: auto; display: inline-block;">
-                            <option value="all">Todos los galpones</option>
-                        </select> -->
+                        <div class="btn-group page-utilities">
+                            <button class="btn app-btn-secondary dropdown-toggle" type="button" id="export-btn"
+                                data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fa fa-file-export me-1"></i> Exportar
+                            </button>
+                            <ul class="dropdown-menu" aria-labelledby="export-btn">
+                                <li><a class="dropdown-item export-format" href="#" data-format="csv">Exportar
+                                        CSV</a></li>
+                                <li><a class="dropdown-item export-format" href="#" data-format="excel">Exportar
+                                        Excel</a>
+                                </li>
+                            </ul>
+                        </div>
+                        
                         <!-- Boton crear venta -->
                         <button type="button" id="btnCreateVenta" class="btn btn-success" data-page="detalles_venta">
                             <i class="fa fa-plus me-1"></i>Agregar</button>
