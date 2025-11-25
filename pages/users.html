@@ -1,61 +1,54 @@
-<div class="row g-3 mb-4 align-items-center justify-content-between">
-    <div class="col-auto">
-        <h1 class="app-page-title mb-0">Usuarios</h1>
-    </div>
-
-    <div class="col-auto">
-        <div class="page-utilities">
-            <div class="row g-2 justify-content-start justify-content-md-end align-items-center">
-
-                <div class="col-auto">
-                    <select id="filter-role" class="form-select w-auto">
-                        <option value="all">Todos los roles</option>
-<!--                         <option value="superadmin">SuperAdmin</option>
-                        <option value="administrador">Admin</option> -->
-                        <option value="supervisor">Supervisor</option>
-                        <option value="operario">Operario</option>
-                    </select>
-                </div>
-
-                <div class="col-auto">
-                    <select id="filter-status" class="form-select w-auto">
-                        <option value="all">Todos</option>
-                        <option value="active">Activos</option>
-                        <option value="inactive">Inactivos</option>
-                    </select>
-                </div>
-
-                <div class="col-auto">
-                    <div class="btn-group">
-                        <button class="btn app-btn-secondary dropdown-toggle" type="button" id="export-btn"
-                            data-bs-toggle="dropdown" aria-expanded="false">
-                            <i class="fa fa-file-export me-1"></i> Exportar
-                        </button>
-                        <ul class="dropdown-menu" aria-labelledby="export-btn">
-                            <li><a class="dropdown-item export-format" href="#" data-format="csv">Exportar CSV</a></li>
-                            <li><a class="dropdown-item export-format" href="#" data-format="excel">Exportar Excel</a>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-
-
-
-                <div class="col-auto">
-                    <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#create-user-modal"
-                    id="btn-open-create-user"><i class="fa fa-plus me-1"></i>Nuevo Usuario</button>
-                </div>
-
-            </div>
-        </div>
-    </div>
-</div>
-
 <div class="row">
     <div class="col-12">
-        <div class="card shadow-sm mb-5">
+        <div class="card">
             <div class="card-body">
-                <div class="table-responsive">
+                <div class="d-md-flex align-items-center">
+                    <div>
+                        <h4 class="mb-0">Usuarios</h4>
+                    </div>
+                    <div class="ms-auto mt-3 mt-md-0">
+                        <div class="col-auto">
+                            <div class="page-utilities">
+                                <div class="row g-2 justify-content-start justify-content-md-end align-items-center">
+                                    <div class="col-auto">
+                                        <select id="filter-role" class="form-select w-auto">
+                                            <option value="all">Todos los roles</option>
+                <!--                         <option value="superadmin">SuperAdmin</option>
+                                            <option value="administrador">Admin</option> -->
+                                            <option value="supervisor">Supervisor</option>
+                                            <option value="operario">Operario</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-auto">
+                                        <select id="filter-status" class="form-select w-auto">
+                                            <option value="all">Todos</option>
+                                            <option value="active">Activos</option>
+                                            <option value="inactive">Inactivos</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-auto">
+                                    <div class="btn-group">
+                                        <button class="btn app-btn-secondary dropdown-toggle" type="button" id="export-btn"
+                                            data-bs-toggle="dropdown" aria-expanded="false">
+                                            <i class="fa fa-file-export me-1"></i> Exportar
+                                        </button>
+                                        <ul class="dropdown-menu" aria-labelledby="export-btn">
+                                            <li><a class="dropdown-item export-format" href="#" data-format="csv">Exportar CSV</a></li>
+                                            <li><a class="dropdown-item export-format" href="#" data-format="excel">Exportar Excel</a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                    <div class="col-auto">
+                                        <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#create-user-modal"
+                                        id="btn-open-create-user"><i class="fa fa-plus me-1"></i>Nuevo Usuario</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="table-responsive mt-4">
                     <table class="table table-striped table-hover table-sm mb-0 text-nowrap align-middle">
                         <thead>
                             <tr>
@@ -74,13 +67,11 @@
                 </div>
             </div>
         </div>
-
+        <nav class="app-pagination mt-3" id="pagination-container">
+            <ul class="pagination justify-content-center" id="pagination-list"></ul>
+        </nav>
     </div>
 </div>
-
-<nav class="app-pagination" id="pagination-container">
-    <ul class="pagination justify-content-center" id="pagination-list"></ul>
-</nav>
 
 <!-- Modal Crear Usuario -->
 <div class="modal fade" id="create-user-modal" tabindex="-1" aria-hidden="true">
