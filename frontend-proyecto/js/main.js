@@ -96,3 +96,5 @@ if (logoutButton) {
     window.location.href = '/login.html';
   });
 }
+
+window.loadContent = loadContent;
