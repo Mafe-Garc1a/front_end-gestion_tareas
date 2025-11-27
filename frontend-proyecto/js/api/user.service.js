@@ -73,7 +73,7 @@ export const userService = {
     },
 
 
-        getUsersExceptSuperadmins: () => {
+    getUsersExceptSuperadmins: () => {
         const endpoint = `/users/all-users-except-superadmins`;
         return request(endpoint);
     },
