@@ -33,7 +33,7 @@ function createUserRow(usuario) {
         </div>
       </td>
 
-      <td class="cell text-center">
+      <td class="cell text-end">
         <button class="btn btn-success btn-sm btn-edit-user" aria-label="Editar" data-user-email="${usuario.email}">
           <i class="fa-regular fa-pen-to-square"></i>
         </button>
@@ -157,6 +157,13 @@ function handleExportClick(event) {
     exportToExcel(data, `usuarios_${dateTag}.xlsx`);
   }
 }
+
+function limpiarFiltros() {
+  document.getElementById("filter-role").value = "all";
+  document.getElementById("filter-status").value = "all";
+  init();
+}
+
 
 
 
@@ -428,6 +435,11 @@ async function init() {
   if (statusSelect) {
     statusSelect.removeEventListener("change", applyUserFilters);
     statusSelect.addEventListener("change", applyUserFilters);
+  }
+
+  if (btnClear) {
+    btnClear.removeEventListener('click', limpiarFiltros);
+    btnClear.addEventListener('click', limpiarFiltros);
   }
 }
 
