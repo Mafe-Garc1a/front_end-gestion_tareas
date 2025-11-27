@@ -158,6 +158,12 @@ function handleExportClick(event) {
   }
 }
 
+function limpiarFiltros() {
+  document.getElementById("filter-role").value = "all";
+  document.getElementById("filter-status").value = "all";
+  init();
+}
+
 
 
 // -----------------------------------------------------
@@ -428,6 +434,11 @@ async function init() {
   if (statusSelect) {
     statusSelect.removeEventListener("change", applyUserFilters);
     statusSelect.addEventListener("change", applyUserFilters);
+  }
+
+  if (btnClear) {
+    btnClear.removeEventListener('click', limpiarFiltros);
+    btnClear.addEventListener('click', limpiarFiltros);
   }
 }
 
