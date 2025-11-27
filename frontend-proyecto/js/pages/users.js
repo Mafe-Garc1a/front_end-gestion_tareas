@@ -1,5 +1,7 @@
 import { userService } from '../api/user.service.js';
 
+const currentUser = JSON.parse(localStorage.getItem("user")); 
+
 let modalInstance = null;
 let createModalInstance = null;
 let originalMail = null;
@@ -16,13 +18,13 @@ function createUserRow(usuario) {
 
   return `
     <tr>
-      <td class="px-0">${usuario.nombre}</td>
-      <td class="px-0">${usuario.documento}</td>
-      <td class="px-0">${usuario.email}</td>
-      <td class="px-0">${usuario.telefono}</td>
-      <td class="px-0">${usuario.nombre_rol}</td>
+      <td class="cell">${usuario.nombre}</td>
+      <td class="cell">${usuario.documento}</td>
+      <td class="cell">${usuario.email}</td>
+      <td class="cell">${usuario.telefono}</td>
+      <td class="cell">${usuario.nombre_rol}</td>
 
-      <td class="px-0 text-center">
+      <td class="cell text-center">
         <div class="form-check form-switch">
           <input 
             class="form-check-input user-status-switch"
@@ -33,9 +35,9 @@ function createUserRow(usuario) {
         </div>
       </td>
 
-      <td class="px-0 text-center">
+      <td class="cell text-center">
         <button class="btn btn-success btn-sm btn-edit-user" aria-label="Editar" data-user-email="${usuario.email}">
-          <i class="fa fa-pen me-0"></i>
+          <i class="fa-regular fa-pen-to-square"></i>
         </button>
       </td>
     </tr>
@@ -163,6 +165,70 @@ function limpiarFiltros() {
   document.getElementById("filter-status").value = "all";
   init();
 }
+
+function populateRoleSelects() {
+  const roleFilter = document.getElementById("filter-role");
+  const roleCreate = document.getElementById("create-id_rol");
+
+  const userString = localStorage.getItem('user');
+  if (!userString) return;
+  const currentUser = JSON.parse(userString);
+
+  // LIMPIAR SELECTS
+  roleFilter.innerHTML = '<option value="all">Todos los roles</option>';
+  roleCreate.innerHTML = '';
+
+  // ------------------------------
+  // 1) ROLES PARA EL FILTRO (NO SUPERADMIN)
+  // ------------------------------
+  
+  let filterRoles = [];
+
+  if (currentUser.id_rol === 1) {
+    filterRoles = [
+      { value: "administrador", label: "Admin" },
+      { value: "supervisor", label: "Supervisor" },
+      { value: "operario", label: "Operario" }
+    ];
+  } else {
+    filterRoles = [
+      { value: "supervisor", label: "Supervisor" },
+      { value: "operario", label: "Operario" }
+    ];
+  }
+
+  filterRoles.forEach(r => {
+    const option = document.createElement("option");
+    option.value = r.value;
+    option.textContent = r.label;
+    roleFilter.appendChild(option);
+  });
+
+  // ------------------------------
+  // 2) ROLES PARA CREAR USUARIO
+  // ------------------------------
+  const createRoles = [];
+
+  // SuperAdmin puede crear SuperAdmin y Admin
+  if (currentUser.id_rol === 1) {
+    createRoles.push({ value: "1", label: "SuperAdmin" });
+    createRoles.push({ value: "2", label: "Admin" });
+  }
+
+  // Todos pueden ver Supervisor + Operario en CREAR
+  createRoles.push({ value: "3", label: "Supervisor" });
+  createRoles.push({ value: "4", label: "Operario" });
+
+  createRoles.forEach(r => {
+    const option = document.createElement("option");
+    option.value = r.value;
+    option.textContent = r.label;
+    roleCreate.appendChild(option);
+  });
+}
+
+
+
 
 
 
@@ -386,7 +452,12 @@ async function init() {
   tableBody.innerHTML = '<tr><td colspan="7" class="text-center">Cargando usuarios ...</td></tr>';
 
   try {
-    allUsers = await userService.getUsers();
+    if (currentUser.id_rol === 1) { // SuperAdmin
+      allUsers = await userService.getUsersExceptSuperadmins();
+    } else {
+      allUsers = await userService.getUsers();
+    }
+    
     filteredUsers = [];
 
     if (allUsers && allUsers.length > 0) {
@@ -425,6 +496,7 @@ async function init() {
 
   const roleSelect = document.getElementById("filter-role");
   const statusSelect = document.getElementById("filter-status");
+  const btnClear = document.getElementById('btn_clear_filters');
 
   if (roleSelect) {
     roleSelect.removeEventListener("change", applyUserFilters);
@@ -441,6 +513,8 @@ async function init() {
     btnClear.addEventListener('click', limpiarFiltros);
   }
 }
+
+populateRoleSelects();
 
 export { init };
 
@@ -473,3 +547,4 @@ function applyUserFilters() {
     ? result.map(createUserRow).join("")
     : `<tr><td colspan="7" class="text-center">No hay usuarios con esos criterios.</td></tr>`;
 }
+
