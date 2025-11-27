@@ -272,9 +272,9 @@ async function handleUpdateSubmit(event) {
 
   const userId = document.getElementById('edit-user-id').value;
   const updatedData = {
-    nombre: document.getElementById('edit-nombre').value,
-    telefono: document.getElementById('edit-telefono').value,
-    documento: document.getElementById('edit-documento').value,
+    nombre: document.getElementById('edit-nombre').value.trim(),
+    telefono: document.getElementById('edit-telefono').value.trim(),
+    documento: document.getElementById('edit-documento').value.trim(),
   };
 
   let newEmail = document.getElementById('edit-email').value;
@@ -300,14 +300,23 @@ async function handleUpdateSubmit(event) {
     });
     await init();
     applyUserFilters();
-    
   } catch (error) {
     console.error(`Error al actualizar usuario ${userId}:`, error);
-    await swalWithBootstrapButtonsEdit.fire({
-      title: "Error",
-      text: "No se pudo actualizar el usuario.",
-      icon: "error"
-    });
+    if(error.message == "El correo ya está registrado."){
+      await swalWithBootstrapButtonsEdit.fire({
+        title: "Error",
+        text: error, 
+        icon: "error"
+      });
+    }
+    if(error.message == "El número de documento ya existe."){
+      await swalWithBootstrapButtonsEdit.fire({
+        title: "Error",
+        text: error, 
+        icon: "error"
+      });
+    }
+    
   }
 }
 
@@ -388,14 +397,46 @@ async function handleCreateSubmit(event) {
   event.preventDefault();
 
   const newUserData = {
-    nombre: document.getElementById('create-nombre').value,
-    documento: document.getElementById('create-documento').value,
-    email: document.getElementById('create-email').value,
-    pass_hash: document.getElementById('create-password').value,
-    telefono: document.getElementById('create-telefono').value,
+    nombre: document.getElementById('create-nombre').value.trim(),
+    documento: document.getElementById('create-documento').value.trim(),
+    email: document.getElementById('create-email').value.trim(),
+    pass_hash: document.getElementById('create-password').value.trim(),
+    telefono: document.getElementById('create-telefono').value.trim(),
     id_rol: parseInt(document.getElementById('create-id_rol').value),
     estado: true
   };
+  if (!newUserData.nombre || newUserData.nombre.length < 3) {
+    Swal.fire({
+      icon: "error",
+      title: "Nombre inválido",
+      text: "El nombre debe tener al menos 3 caracteres válidos.",
+    });
+    return;
+  }
+  if (!newUserData.documento || newUserData.documento.length < 8) {
+    Swal.fire({
+      icon: "error",
+      title: "Documento inválido",
+      text: "El documento debe tener al menos 8 caracteres válidos.",
+    });
+    return;
+  }
+  if (!newUserData.pass_hash || newUserData.documento.pass_hash < 8) {
+    Swal.fire({
+      icon: "error",
+      title: "Pass_hash inválido",
+      text: "El pass_hash debe tener al menos 8 caracteres válidos.",
+    });
+    return;
+  }
+  if (!newUserData.telefono || newUserData.telefono.pass_hash < 7) {
+    Swal.fire({
+      icon: "error",
+      title: "Telefono inválido",
+      text: "El telefono debe tener al menos 8 caracteres válidos.",
+    });
+    return;
+  }
   const swalWithBootstrapButtonsCreate = Swal.mixin({
     customClass: {
       confirmButton: "btn btn-success ms-2",
@@ -421,11 +462,20 @@ async function handleCreateSubmit(event) {
     applyUserFilters();
   } catch (error) {
     console.error('Error al crear usuario:', error);
-    await swalWithBootstrapButtonsCreate.fire({
-      title: "Error",
-      text: "No se pudo crear el usuario.",
-      icon: "error"
-    });
+    if(error.message == "El correo ya está registrado."){
+      await swalWithBootstrapButtonsCreate.fire({
+        title: "Error",
+        text: error.message,
+        icon: "error"
+      });
+    }
+    if(error.message == "El número de documento ya existe."){
+      await swalWithBootstrapButtonsCreate.fire({
+        title: "Error",
+        text: error.message,
+        icon: "error"
+      });
+    }
   }
 }
 
