@@ -1,5 +1,5 @@
 import { ventaService } from "../api/venta.service.js";
-import {loadContent} from "../main.js";
+import { loadContent } from "../main.js";
 
 let modalInstance = null; // Guardará la instancia del modal de Bootstrap
 let createModalInstance = null; // Guardará la instancia del modal de Bootstrap
@@ -13,11 +13,7 @@ function createVentaRow(venta) {
     hour12: true
   });
 
-    const statusBadge = venta.estado
-        ? `<span class="badge bg-success">Activo</span>`
-        : `<span class="badge bg-danger">Inactivo</span>`;
-
-    return `
+  return `
         <tr>
             <td class="cell">${venta.id_venta}</td>
             <td class="cell">${fechaFormateada}</td>
@@ -27,9 +23,8 @@ function createVentaRow(venta) {
             <td class="cell">
                 <div class="form-check form-switch d-inline-block">
                     <input class="form-check-input venta-status-switch" type="checkbox" role="switch" 
-                            id="switch-${venta.id_venta}" data-venta-id="${
-                                venta.id_venta
-                            }" 
+                            id="switch-${venta.id_venta}" data-venta-id="${venta.id_venta
+    }" 
                             ${venta.estado ? "checked" : ""}>
                 </div>
             </td>
@@ -37,8 +32,7 @@ function createVentaRow(venta) {
               <button class="btn btn-success btn-sm btn-edit-venta me-1" data-venta-id="${venta.id_venta}" aria-label="Editar">
                 <i class="fa-regular fa-pen-to-square"></i>
               </button>
-              <button class="btn btn-success btn-sm btn-detalles-venta me-1" data-venta-id="${
-                    venta.id_venta}" data-page="info_venta">
+              <button class="btn btn-success btn-sm btn-detalles-venta me-1" data-venta-id="${venta.id_venta}" data-page="info_venta">
                     <i class="fas fa-search"></i>
                 </button>
             </td>
@@ -46,12 +40,14 @@ function createVentaRow(venta) {
     `;
 }
 
-//______________________________paginación para todos los datos y filtrados_____________
-  let fecha_actual = new Date();
-  let activeFechaInicio = convertirFecha(fecha_actual);
-  let activeFechaFin =  convertirFecha(fecha_actual);
+
+let fecha_actual = new Date();
+let activeFechaInicio = convertirFecha(fecha_actual);
+let activeFechaFin = convertirFecha(fecha_actual);
+
 
 async function fetchVentas(page = 1, page_size = 10, fechaInicio = "", fechaFin = "") {
+
   try {
     let response;
     if (fechaInicio && fechaFin) {
@@ -74,98 +70,98 @@ async function fetchVentas(page = 1, page_size = 10, fechaInicio = "", fechaFin 
 
 // Modificar la función init para que pase correctamente los filtros a la paginación
 function renderPagination(total_pages, currentPage = 1) {
-    const container = document.querySelector("#pagination");
-    if (!container) return;
+  const container = document.querySelector("#pagination");
+  if (!container) return;
 
-    container.innerHTML = "";
+  container.innerHTML = "";
 
-    // ---------- BOTÓN ANTERIOR ----------
-    const prevLi = document.createElement("li");
-    prevLi.className = `page-item ${currentPage === 1 ? "disabled" : ""}`;
-    prevLi.innerHTML = `
+// boton anterior
+  const prevLi = document.createElement("li");
+  prevLi.className = `page-item ${currentPage === 1 ? "disabled" : ""}`;
+  prevLi.innerHTML = `
         <a class="page-link text-success" href="#" data-page="${currentPage - 1}">
             <i class="fas fa-chevron-left"></i>
         </a>
     `;
-    prevLi.addEventListener("click", () => {
-        if (currentPage !== 1) {
-            const prevPage = currentPage - 1;
-            init(prevPage, 10, activeFechaInicio, activeFechaFin);
-        }
-    });
-    container.appendChild(prevLi);
-
-    const maxVisible = 5;
-    let startPage = Math.max(1, currentPage - Math.floor(maxVisible / 2));
-    let endPage = Math.min(total_pages, startPage + maxVisible - 1);
-
-    if (endPage - startPage + 1 < maxVisible) {
-        startPage = Math.max(1, endPage - maxVisible + 1);
+  prevLi.addEventListener("click", () => {
+    if (currentPage !== 1) {
+      const prevPage = currentPage - 1;
+      init(prevPage, 10, activeFechaInicio, activeFechaFin);
     }
+  });
+  container.appendChild(prevLi);
 
-    // ---------- PRIMERA PÁGINA + ... ----------
-    if (startPage > 1) {
-        container.appendChild(createPageLi(1, currentPage));
-        if (startPage > 2) container.appendChild(createDotsLi());
-    }
+  const maxVisible = 5;
+  let startPage = Math.max(1, currentPage - Math.floor(maxVisible / 2));
+  let endPage = Math.min(total_pages, startPage + maxVisible - 1);
 
-    // ---------- NÚMEROS DE PÁGINA ----------
-    for (let i = startPage; i <= endPage; i++) {
-        container.appendChild(createPageLi(i, currentPage));
-    }
+  if (endPage - startPage + 1 < maxVisible) {
+    startPage = Math.max(1, endPage - maxVisible + 1);
+  }
 
-    // ---------- ... + ÚLTIMA PÁGINA ----------
-    if (endPage < total_pages) {
-        if (endPage < total_pages - 1) container.appendChild(createDotsLi());
-        container.appendChild(createPageLi(total_pages, currentPage));
-    }
+// primera pagina
+  if (startPage > 1) {
+    container.appendChild(createPageLi(1, currentPage));
+    if (startPage > 2) container.appendChild(createDotsLi());
+  }
 
-    // ---------- BOTÓN SIGUIENTE ----------
-    const nextLi = document.createElement("li");
-    nextLi.className = `page-item ${currentPage === total_pages ? "disabled" : ""}`;
-    nextLi.innerHTML = `
+// numeros pagina
+  for (let i = startPage; i <= endPage; i++) {
+    container.appendChild(createPageLi(i, currentPage));
+  }
+
+// ultima pagina
+  if (endPage < total_pages) {
+    if (endPage < total_pages - 1) container.appendChild(createDotsLi());
+    container.appendChild(createPageLi(total_pages, currentPage));
+  }
+
+// pagina siguiente
+  const nextLi = document.createElement("li");
+  nextLi.className = `page-item ${currentPage === total_pages ? "disabled" : ""}`;
+  nextLi.innerHTML = `
         <a class="page-link text-success" href="#" data-page="${currentPage + 1}">
             <i class="fas fa-chevron-right"></i>
         </a>
     `;
-    nextLi.addEventListener("click", () => {
-        if (currentPage !== total_pages) {
-            const nextPage = currentPage + 1;
-            init(nextPage, 10, activeFechaInicio, activeFechaFin);
-        }
-    });
-    container.appendChild(nextLi);
+  nextLi.addEventListener("click", () => {
+    if (currentPage !== total_pages) {
+      const nextPage = currentPage + 1;
+      init(nextPage, 10, activeFechaInicio, activeFechaFin);
+    }
+  });
+  container.appendChild(nextLi);
 }
 
-// ========== BOTÓN DE NÚMERO DE PÁGINA ==========
+// boton numero de pagina
 function createPageLi(page, currentPage) {
-    const li = document.createElement("li");
+  const li = document.createElement("li");
 
-    const isActive = page === currentPage;
+  const isActive = page === currentPage;
 
-    li.className = `page-item ${isActive ? 'active' : ''}`;
-    li.innerHTML = `
+  li.className = `page-item ${isActive ? 'active' : ''}`;
+  li.innerHTML = `
         <a class="page-link ${isActive ? "bg-success border-success text-white" : "text-success"}"
            href="#" data-page="${page}">
            ${page}
         </a>
     `;
 
-    li.addEventListener("click", () => {
-        if (!isActive) {
-            init(page, 10, activeFechaInicio, activeFechaFin);
-        }
-    });
+  li.addEventListener("click", () => {
+    if (!isActive) {
+      init(page, 10, activeFechaInicio, activeFechaFin);
+    }
+  });
 
-    return li;
+  return li;
 }
 
-// ========== PUNTOS SUSPENSIVOS ==========
+// puntos suspensivos
 function createDotsLi() {
-    const li = document.createElement("li");
-    li.className = "page-item disabled";
-    li.innerHTML = `<a class="page-link text-success">...</a>`;
-    return li;
+  const li = document.createElement("li");
+  li.className = "page-item disabled";
+  li.innerHTML = `<a class="page-link text-success">...</a>`;
+  return li;
 }
 
 
@@ -189,92 +185,104 @@ function filtrarVentas(fechaInicio, fechaFin) {
 }
 
 
-
-
 function limpiarFiltros() {
-  document.getElementById("fecha-inicio").value = "";
-  document.getElementById("fecha-fin").value = "";
+  console.log("Limpiando");
+  let fecha_actual = new Date();
+  activeFechaInicio = convertirFecha(fecha_actual);
+  activeFechaFin = convertirFecha(fecha_actual);
+
+  document.getElementById("fecha-inicio").value = activeFechaInicio;
+  document.getElementById("fecha-fin").value = activeFechaFin;
   init(1, 10);
 }
+
+
+function aplicarFiltros() {
+  const fechaInicio = document.getElementById("fecha-inicio").value;
+  const fechaFin = document.getElementById("fecha-fin").value;
+  filtrarVentas(fechaInicio, fechaFin);
+}
+
 
 function convertirFecha(fechaActual) {
   // dar formato a la fecha YYYY/MM/DD
   const fecha = fechaActual;
   const formato = fecha.getFullYear() + "/" +
-               String(fecha.getMonth() + 1).padStart(2, '0') + "/" +
-               String(fecha.getDate()).padStart(2, '0');
+    String(fecha.getMonth() + 1).padStart(2, '0') + "/" +
+    String(fecha.getDate()).padStart(2, '0');
   return formato;
 }
 
 // --- FUNCIÓN PRINCIPAL DE INICIALIZACIÓN ---
 async function init(page = 1, page_size = 10, fechaInicio = activeFechaInicio, fechaFin = activeFechaFin) {
   activeFechaInicio = fechaInicio;
-  activeFechaFin =  fechaFin;
+  activeFechaFin = fechaFin;
 
-    const tableBody = document.getElementById("ventas-table-body");
-    if (!tableBody) return;
+  const tableBody = document.getElementById("ventas-table-body");
+  if (!tableBody) return;
 
-    tableBody.innerHTML =
-        '<tr><td colspan="7" class="text-center">Cargando ventas ... </td></tr>';
+  tableBody.innerHTML =
+    '<tr><td colspan="7" class="text-center">Cargando ventas ... </td></tr>';
 
-    try {
-        const data = await fetchVentas(page, page_size, activeFechaInicio, activeFechaFin);
-        const ventas = data.ventas || [];
-        if (ventas.length > 0) {
-          tableBody.innerHTML = ventas.map(createVentaRow).join("");
-        } else {
-          tableBody.innerHTML =
-            '<tr><td colspan="7" class="text-center">No se encontraron ventas.</td></tr>';
-        }
-
-        renderPagination(data.total_pages || 1, page);
-    } catch (error) {
-        console.error("Error al obtener las ventas:", error);
-        tableBody.innerHTML = `<tr><td colspan="7" class="text-center text-danger">Error al cargar los datos.</td></tr>`;
+  try {
+    const data = await fetchVentas(page, page_size, activeFechaInicio, activeFechaFin);
+    const ventas = data.ventas || [];
+    if (ventas.length > 0) {
+      tableBody.innerHTML = ventas.map(createVentaRow).join("");
+    } else {
+      tableBody.innerHTML =
+        '<tr><td colspan="7" class="text-center">No se encontraron ventas.</td></tr>';
     }
 
-    // Aplicamos el patrón remove/add para evitar listeners duplicados
+    renderPagination(data.total_pages || 1, page);
+  } catch (error) {
+    console.error("Error al obtener las ventas:", error);
+    tableBody.innerHTML = `<tr><td colspan="7" class="text-center text-danger">Error al cargar los datos.</td></tr>`;
+  }
 
-    // Boton para crear venta
-    const btnCreateVenta = document.getElementById("btnCreateVenta");
+  // Aplicamos el patrón remove/add para evitar listeners duplicados
 
-    // formulario para actualizar venta
-    const editForm = document.getElementById("edit-venta-form");
-    
-    btnCreateVenta.removeEventListener("click", handleCreateVentaClick);
-    btnCreateVenta.addEventListener("click", handleCreateVentaClick);
+  // Boton para crear venta
+  const btnCreateVenta = document.getElementById("btnCreateVenta");
 
-    tableBody.removeEventListener("click", handleTableClick);
-    tableBody.addEventListener("click", handleTableClick);
+  // formulario para actualizar venta
+  const editForm = document.getElementById("edit-venta-form");
 
-    // para boton ver detalles
-    tableBody.removeEventListener("click", handleDetallesClick);
-    tableBody.addEventListener("click", handleDetallesClick);
+  btnCreateVenta.removeEventListener("click", handleCreateVentaClick);
+  btnCreateVenta.addEventListener("click", handleCreateVentaClick);
 
-    tableBody.removeEventListener("change", handleStatusSwitch);
-    tableBody.addEventListener("change", handleStatusSwitch);
+  tableBody.removeEventListener("click", handleTableClick);
+  tableBody.addEventListener("click", handleTableClick);
 
-    editForm.removeEventListener("submit", handleUpdateSubmit);
-    editForm.addEventListener("submit", handleUpdateSubmit);
+  // para boton ver detalles
+  tableBody.removeEventListener("click", handleDetallesClick);
+  tableBody.addEventListener("click", handleDetallesClick);
 
-    document.getElementById('edit-venta-modal').addEventListener('show.bs.modal', function () {
-      cargarMetodosPago();  // Llamamos a la función para cargar los métodos de pago
-    });
+  tableBody.removeEventListener("change", handleStatusSwitch);
+  tableBody.addEventListener("change", handleStatusSwitch);
 
-    // Botón para aplicar filtro
-    document.getElementById("btn-apply-date-filter").addEventListener("click", () => {
-      const fechaInicio = document.getElementById("fecha-inicio").value;
-      const fechaFin = document.getElementById("fecha-fin").value;
-      filtrarVentas(fechaInicio, fechaFin);
-    });
+  editForm.removeEventListener("submit", handleUpdateSubmit);
+  editForm.addEventListener("submit", handleUpdateSubmit);
 
-    //Boton para limpiar filtros
-    const btnClear = document.getElementById('btn_clear_filters');
-    btnClear.removeEventListener('click', limpiarFiltros);
-    btnClear.addEventListener('click', limpiarFiltros);
+  document.getElementById('edit-venta-modal').addEventListener('show.bs.modal', function () {
+    cargarMetodosPago();  // Llamamos a la función para cargar los métodos de pago
+  });
+
+  // Botón para aplicar filtro
+  const btnAplicarFiltros = document.getElementById("btn-apply-date-filter");
+  btnAplicarFiltros.removeEventListener('click', aplicarFiltros);
+  btnAplicarFiltros.addEventListener('click', aplicarFiltros);
+
+  //Boton para limpiar filtros
+  const btnClear = document.getElementById('btn_clear_filters');
+  btnClear.removeEventListener('click', limpiarFiltros);
+  btnClear.addEventListener('click', limpiarFiltros);
 }
 
 export { init };
+
+
+
 
 // --- MANEJADORES DE EVENTOS ---
 
@@ -321,7 +329,7 @@ async function handleStatusSwitch(event) {
         text: "Venta cancelada con éxito",
       });
 
-      init(); 
+      init();
     } catch (error) {
       console.error("Error al cancelar venta:", error);
       Swal.fire({
@@ -342,93 +350,51 @@ async function handleStatusSwitch(event) {
 
 // manejador para crear usuario (al dar click en el botón)
 async function handleCreateVentaClick(event) {
-    event.preventDefault();
-    console.log("Creando nueva venta y navegando a detalles...");
-    
-    // Obtener datos del usuario
-    let user_token_objeto = JSON.parse(localStorage.getItem('user'));
-    let usuario_token = user_token_objeto.id_usuario;
+  event.preventDefault();
+  console.log("Creando nueva venta y navegando a detalles...");
 
-    // Crear fecha/hora actual
-    const fechaHoraLocal = new Date();
-    const offset = fechaHoraLocal.getTimezoneOffset();
-    fechaHoraLocal.setMinutes(fechaHoraLocal.getMinutes() - offset);
-    const fechaHoraISO = fechaHoraLocal.toISOString();
-    
-    const ventaData = {
-        id_usuario: usuario_token,
-        fecha_hora: fechaHoraISO,
-    };
+  // Obtener datos del usuario
+  let user_token_objeto = JSON.parse(localStorage.getItem('user'));
+  let usuario_token = user_token_objeto.id_usuario;
 
-    try {
-        // Crear la venta en la base de datos
-        const response = await ventaService.createVenta(ventaData);
-        let dataVenta = response.data_venta;
-        console.log("Venta creada:", dataVenta);
+  // Crear fecha/hora actual
+  const fechaHoraLocal = new Date();
+  const offset = fechaHoraLocal.getTimezoneOffset();
+  fechaHoraLocal.setMinutes(fechaHoraLocal.getMinutes() - offset);
+  const fechaHoraISO = fechaHoraLocal.toISOString();
 
-        // Guardar en localStorage
-        localStorage.setItem('data_venta', JSON.stringify(dataVenta));
-        
-        Swal.fire({
-          icon: 'success',
-          title: "Creando venta...",
-        });
-        
-        const pageToLoad = event.target.dataset.page;
-        loadContent(pageToLoad);
+  const ventaData = {
+    id_usuario: usuario_token,
+    fecha_hora: fechaHoraISO,
+  };
 
-        
-    } catch (error) {
-        console.error("Error al crear la venta:", error);
-        Swal.fire({
-          icon: "error",
-          title: 'Ups...',
-          text: "No se pudo crear la venta",
-        });
-    }
+  try {
+    // Crear la venta en la base de datos
+    const response = await ventaService.createVenta(ventaData);
+    let dataVenta = response.data_venta;
+    console.log("Venta creada:", dataVenta);
+
+    // Guardar en localStorage
+    localStorage.setItem('data_venta', JSON.stringify(dataVenta));
+
+    Swal.fire({
+      icon: 'success',
+      title: "Creando venta...",
+    });
+
+    const pageToLoad = event.target.dataset.page;
+    loadContent(pageToLoad);
+
+
+  } catch (error) {
+    console.error("Error al crear la venta:", error);
+    Swal.fire({
+      icon: "error",
+      title: 'Ups...',
+      text: "No se pudo crear la venta",
+    });
+  }
 }
-// async function handleCreateSubmit(event) {
-//     event.preventDefault();
-
-//     // obtener token y parsear
-//     let user_token_objeto = JSON.parse(localStorage.getItem('user'));
-    
-//     //id_usuario que registra la venta
-//     let usuario_token = user_token_objeto.id_usuario;
-
-
-//     //fecha_hora del dispositivo que usa la aplicacion
-//     const fechaHoraLocal = new Date(); // Obtener fecha y hora local
-    
-//     const offset = fechaHoraLocal.getTimezoneOffset(); // Obtener el desplazamiento de la zona horaria local en minutos
-    
-//     fechaHoraLocal.setMinutes(fechaHoraLocal.getMinutes() - offset); // Ajustar la fecha para la zona horaria local (sumar el offset)
-    
-//     const fechaHoraISO = fechaHoraLocal.toISOString(); // Convertir a formato ISO
-//     console.log(fechaHoraISO);
-    
-//     const ventaData = {
-//         id_usuario: usuario_token,
-//         fecha_hora: fechaHoraISO,
-//     };
-
-//     try {
-//         const response = await ventaService.createVenta(ventaData);
-//         let dataVenta = response.data_venta
-//         console.log("dataVenta", dataVenta);
-
-//         // guardar en el localstorage convertido a string
-//         localStorage.setItem('data_venta', JSON.stringify(dataVenta));
-        
-//         if (createModalInstance) createModalInstance.hide();
-//         document.getElementById("create-venta-form").reset(); // Limpiamos el formulario
-//         alert("Venta creada exitosamente.");
-//         init(); // Recargamos la tabla para ver la nueva venta
-//     } catch (error) {
-//         console.error("Error al crear la venta:", error);
-//         alert("No se pudo crear la venta.");
-//     }
-// }
 
 
 async function handleTableClick(event) {
@@ -449,7 +415,7 @@ async function handleDetallesClick(event) {
     const ventaId = detallesButton.dataset.ventaId;
 
     localStorage.setItem('id_venta_ver', JSON.stringify(ventaId));
-    
+
     console.log(`Ver detalles de la venta: ${ventaId}`);
 
     const pageToLoad = detallesButton.dataset.page;
@@ -459,26 +425,26 @@ async function handleDetallesClick(event) {
 
 async function openEditModal(ventaId) {
   // Manejador para abrir modal editar con datos
-    const modalElement = document.getElementById('edit-venta-modal');
-    if (modalElement) {
-      modalInstance = new bootstrap.Modal(modalElement);
-    }
+  const modalElement = document.getElementById('edit-venta-modal');
+  if (modalElement) {
+    modalInstance = new bootstrap.Modal(modalElement);
+  }
 
-    try {
-        const venta = await ventaService.getVentaById(ventaId);
-        
-        document.getElementById('edit-venta-id').value = venta.id_venta;
-        document.getElementById('edit-tipo-pago').value = venta.metodo_pago;
+  try {
+    const venta = await ventaService.getVentaById(ventaId);
 
-        modalInstance.show();
-    } catch (error) {
-        console.error(`Error al obtener datos de la venta ${ventaId}:`, error);
-        Swal.fire({
-          icon: "error",
-          title: 'Ups...',
-          text: "Error al cargar datos de la venta.",
-        });
-    }
+    document.getElementById('edit-venta-id').value = venta.id_venta;
+    document.getElementById('edit-tipo-pago').value = venta.metodo_pago;
+
+    modalInstance.show();
+  } catch (error) {
+    console.error(`Error al obtener datos de la venta ${ventaId}:`, error);
+    Swal.fire({
+      icon: "error",
+      title: 'Ups...',
+      text: "Error al cargar datos de la venta.",
+    });
+  }
 }
 
 
@@ -521,15 +487,15 @@ async function cargarMetodosPago() {
 
     if (Array.isArray(metodosPago)) {
 
-    const activos = metodosPago.filter(m => m.estado === true);
+      const activos = metodosPago.filter(m => m.estado === true);
 
-    if (activos.length === 0) {
-      selectTipoPago.innerHTML = '<option disabled>No hay métodos de pago activos</option>';
-      return;
-    }
+      if (activos.length === 0) {
+        selectTipoPago.innerHTML = '<option disabled>No hay métodos de pago activos</option>';
+        return;
+      }
 
       // Insertar solo los activos
-        activos.forEach(metodo => {
+      activos.forEach(metodo => {
         const option = document.createElement('option');
         option.value = metodo.id_tipo;
         option.textContent = metodo.nombre;
@@ -686,7 +652,7 @@ async function cargarMetodosPago() {
 //   if (fmt === "csv") {
 //     exportToCSV(data, `ventas_${dateTag}.csv`);
 //   } else if (fmt === "excel") {
-//     exportToExcel(data, `ventas_${dateTag}.xls`); 
+//     exportToExcel(data, `ventas_${dateTag}.xls`);
 //   }
 // }
 //end export
