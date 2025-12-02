@@ -5,6 +5,13 @@ let modalInstance = null; // Guardará la instancia del modal de Bootstrap
 let createModalInstance = null; // Guardará la instancia del modal de Bootstrap
 let originalMail = null;
 
+const swalWithBootstrapButtons = Swal.mixin({
+  customClass: {
+    confirmButton: "btn btn-success",
+    cancelButton: "btn btn-secondary"
+  },
+  buttonsStyling: false
+});
 
 function createVentaRow(venta) {
   const fecha = new Date(venta.fecha_hora);
@@ -166,11 +173,19 @@ function createDotsLi() {
 
 function filtrarVentas(fechaInicio, fechaFin) {
   if (!fechaInicio || !fechaFin) {
-    Swal.fire({
+    swalWithBootstrapButtons.fire({
       icon: 'info',
       title: 'Error',
-      text: 'Debe seleccionar ambas fechas',
-      confirmButtonColor: 'rgba(51, 136, 221, 1)'
+      text: 'Debe seleccionar ambas fechas'
+    });
+    return;
+  }
+
+  if (fechaInicio > fechaFin) {
+    swalWithBootstrapButtons.fire({
+      icon: 'info',
+      title: 'Error',
+      text: 'La fecha de inicio debe ser anterior a la fecha fin'
     });
     return;
   }
@@ -298,7 +313,7 @@ async function handleStatusSwitch(event) {
 
   // Si la venta estaba cancelada y está intentando habilitar
   if (previousStatus === false && newStatus === true) {
-    Swal.fire({
+    swalWithBootstrapButtons.fire({
       icon: "error",
       title: "Ups...",
       text: "La venta ya fue cancelada, no se puede habilitar",
@@ -308,21 +323,21 @@ async function handleStatusSwitch(event) {
   }
 
   // Confirmación con SweetAlert2
-  const result = await Swal.fire({
+  const result = await swalWithBootstrapButtons.fire({
     title: "¿Estás seguro de cancelar esta venta?",
     text: "Una vez cancelada no se puede revertir.",
     icon: "warning",
     showCancelButton: true,
     confirmButtonText: "Sí, cancelar",
     cancelButtonText: "No, volver",
-    reverseButtons: true,
+    reverseButtons: true
   });
 
   if (result.isConfirmed) {
     try {
       await ventaService.cambiarEstado(ventaId, false);
 
-      Swal.fire({
+      swalWithBootstrapButtons.fire({
         icon: "success",
         title: "Éxito",
         text: "Venta cancelada con éxito",
@@ -331,7 +346,7 @@ async function handleStatusSwitch(event) {
       init();
     } catch (error) {
       console.error("Error al cancelar venta:", error);
-      Swal.fire({
+      swalWithBootstrapButtons.fire({
         icon: "error",
         title: "Ups...",
         text: "Hubo un error al cancelar la venta",
@@ -376,9 +391,11 @@ async function handleCreateVentaClick(event) {
     // Guardar en localStorage
     localStorage.setItem('data_venta', JSON.stringify(dataVenta));
 
-    Swal.fire({
+    swalWithBootstrapButtons.fire({
       icon: 'success',
       title: "Creando venta...",
+      showConfirmButton: false,
+      timer: 1500
     });
 
     const pageToLoad = event.target.dataset.page;
@@ -387,7 +404,7 @@ async function handleCreateVentaClick(event) {
 
   } catch (error) {
     console.error("Error al crear la venta:", error);
-    Swal.fire({
+    swalWithBootstrapButtons.fire({
       icon: "error",
       title: 'Ups...',
       text: "No se pudo crear la venta",
@@ -438,7 +455,7 @@ async function openEditModal(ventaId) {
     modalInstance.show();
   } catch (error) {
     console.error(`Error al obtener datos de la venta ${ventaId}:`, error);
-    Swal.fire({
+    swalWithBootstrapButtons.fire({
       icon: "error",
       title: 'Ups...',
       text: "Error al cargar datos de la venta.",
@@ -458,7 +475,7 @@ async function handleUpdateSubmit(event) {
   try {
     await ventaService.updateVenta(ventaId, ventaData);
     modalInstance.hide();
-    Swal.fire({
+    swalWithBootstrapButtons.fire({
       icon: 'success',
       title: "Exito",
       text: "Venta actualizada exitosamente.",
@@ -466,7 +483,7 @@ async function handleUpdateSubmit(event) {
     init(); // Recargamos la tabla para ver los cambios
   } catch (error) {
     console.error(`Error al actualizar la venta ${ventaId}:`, error);
-    Swal.fire({
+    swalWithBootstrapButtons.fire({
       icon: "error",
       title: 'Ups...',
       text: "Error al actualizar venta.",
@@ -507,7 +524,7 @@ async function cargarMetodosPago() {
 
   } catch (error) {
     console.error('Error al cargar los métodos de pago:', error);
-    Swal.fire({
+    swalWithBootstrapButtons.fire({
       icon: "error",
       title: 'Ups...',
       text: "Error al cargar los métodos de pago.",
@@ -627,7 +644,7 @@ async function cargarMetodosPago() {
 //       URL.revokeObjectURL(url);
 //     } catch (err) {
 //       console.error("No se pudo generar el archivo .xlsx:", err);
-//       Swal.fire({
+//       swalWithBootstrapButtons.fire({
 //         title: "Error al generar .xlsx",
 //         text: err.message || String(err),
 //         icon: "error",
@@ -644,7 +661,7 @@ async function cargarMetodosPago() {
 //   const dateTag = new Date().toISOString().slice(0, 10);
 //   const data = filteredLands && filteredLands.length ? filteredLands : allLands;
 //   if (!data || data.length === 0) {
-//     Swal.fire({ title: "No hay datos para exportar.", icon: "info" });
+//     swalWithBootstrapButtons.fire({ title: "No hay datos para exportar.", icon: "info" });
 //     return;
 //   }
 
