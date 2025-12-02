@@ -5,6 +5,7 @@ let modalInstance = null; // Guardará la instancia del modal de Bootstrap
 let createModalInstance = null; // Guardará la instancia del modal de Bootstrap
 let originalMail = null;
 
+
 function createVentaRow(venta) {
   const fecha = new Date(venta.fecha_hora);
   const fechaFormateada = fecha.toLocaleString('es-ES', {
@@ -75,7 +76,6 @@ function renderPagination(total_pages, currentPage = 1) {
 
   container.innerHTML = "";
 
-// boton anterior
   const prevLi = document.createElement("li");
   prevLi.className = `page-item ${currentPage === 1 ? "disabled" : ""}`;
   prevLi.innerHTML = `
@@ -99,24 +99,23 @@ function renderPagination(total_pages, currentPage = 1) {
     startPage = Math.max(1, endPage - maxVisible + 1);
   }
 
-// primera pagina
   if (startPage > 1) {
     container.appendChild(createPageLi(1, currentPage));
     if (startPage > 2) container.appendChild(createDotsLi());
   }
 
-// numeros pagina
+
   for (let i = startPage; i <= endPage; i++) {
     container.appendChild(createPageLi(i, currentPage));
   }
 
-// ultima pagina
+
   if (endPage < total_pages) {
     if (endPage < total_pages - 1) container.appendChild(createDotsLi());
     container.appendChild(createPageLi(total_pages, currentPage));
   }
 
-// pagina siguiente
+
   const nextLi = document.createElement("li");
   nextLi.className = `page-item ${currentPage === total_pages ? "disabled" : ""}`;
   nextLi.innerHTML = `
