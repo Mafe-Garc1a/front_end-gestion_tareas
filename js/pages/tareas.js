@@ -49,7 +49,7 @@ function createTareaRow(t) {
     <tr data-id_tarea="${t.id_tarea}">
       <td class="cell">${t.id_tarea}</td>
       <td class="cell">${t.documento}</td>
-      <td class="cell">${t.nombres}</td>
+      <td class="cell">${t.nombre}</td>
       <td class="cell">${t.descripcion}</td>
       <td class="cell">${formatDateDisplay(t.fecha_hora_init)}</td>
       <td class="cell">${t.fecha_hora_fin ? formatDateDisplay(t.fecha_hora_fin) : "-"}</td>
