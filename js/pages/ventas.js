@@ -533,7 +533,7 @@ async function cargarMetodosPago() {
 };
 
 
-// Export: manejar clicks en el dropdown (CSV / Excel)
+// // Export: manejar clicks en el dropdown (CSV / Excel)
 //   const pageUtilities = document.querySelector(".page-utilities");
 //   if (pageUtilities) {
 //     pageUtilities.removeEventListener("click", handleExportClick);
@@ -653,13 +653,27 @@ async function cargarMetodosPago() {
 //   }
 // }
 
-// function handleExportClick(event) {
+// async function handleExportClick(event) {
 //   const item = event.target.closest(".export-format");
 //   if (!item) return;
 //   event.preventDefault();
 //   const fmt = item.dataset.format;
 //   const dateTag = new Date().toISOString().slice(0, 10);
-//   const data = filteredLands && filteredLands.length ? filteredLands : allLands;
+
+//   let response;
+//   // 👉 Si NO hay filtros, llamar API normal
+//   if (!activeFechaInicio || !activeFechaFin) {
+//     response = await fetchVentas(1, 1000);
+//   } 
+//   else {
+//     // REVISAR SI TENGO QUE FORMATEAR LAS FECHAS ANTES DE ENVIAR
+//     const fechaInicio = activeFechaInicio;
+//     const fechaFin = activeFechaFin;
+//     response = await fetchVentas(1, 1000, fechaInicio, fechaFin);
+//   }
+
+//   const data = response?.ventas || [];
+
 //   if (!data || data.length === 0) {
 //     swalWithBootstrapButtons.fire({ title: "No hay datos para exportar.", icon: "info" });
 //     return;
@@ -671,4 +685,4 @@ async function cargarMetodosPago() {
 //     exportToExcel(data, `ventas_${dateTag}.xls`);
 //   }
 // }
-//end export
+// // end exportar
