@@ -208,6 +208,15 @@ async function handleUpdateSubmit(event) {
     return;
   }
 
+  if (!updatedData.descripcion || updatedData.descripcion.length < 1) {
+    Swal.fire({
+      icon: "error",
+      title: "Descripción inválida",
+      text: "La descripción no puede estar vacía.",
+    });
+    return;
+  }
+
   try {
     await metodoPagoService.updateMetodoPago(metodoId, updatedData);
     modalInstance.hide();
@@ -322,6 +331,15 @@ async function handleCreateSubmit(event) {
       icon: "error",
       title: "Nombre inválido",
       text: "El nombre debe tener al menos 3 caracteres válidos.",
+    });
+    return;
+  }
+
+  if (!newMetodoData.descripcion || newMetodoData.descripcion.length < 1) {
+    Swal.fire({
+      icon: "error",
+      title: "Descripción inválida",
+      text: "La descripción no puede estar vacía.",
     });
     return;
   }

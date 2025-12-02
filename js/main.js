@@ -58,6 +58,11 @@ export const loadContent = async (page) => {
       import ('./pages/info_venta.js')
         .then(infoVentaModule => infoVentaModule.init());
     }
+
+    if(page === 'perfil') {
+      import ('./pages/perfil.js')
+        .then(perfilModule => perfilModule.init());
+    }
     // Agregar más módulos según sea necesario
 
   } catch (error) {
@@ -125,3 +130,10 @@ if (logoutButton) {
 }
 
 window.loadContent = loadContent;
+
+const buttonPerfil = document.getElementById("buttonPerfil");
+
+buttonPerfil.addEventListener("click", ()=>{
+  const pageValue = buttonPerfil.dataset.page;  
+  loadContent(pageValue);
+})
