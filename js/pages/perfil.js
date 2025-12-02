@@ -13,7 +13,7 @@ const contenedorEstado = document.getElementById("estado_usuario");
 
 contenedorRol.value = usuario.nombre_rol;
 contenedorDescripcionRol.value = usuario.descripcion_rol;
-contenedorEstado.value = usuario.estado ?  "Activa" : "Desactivada";
+contenedorEstado.value = usuario.estado ? "Activa" : "Desactivada";
 
 
 
@@ -28,10 +28,10 @@ const botonCancelar = document.getElementById("boton-cancelar");
 
 async function init() {
     actualizarValoresCampos();
-    
+
     botonEditarPerfil.addEventListener("click", habilitarEdicion);
     botonAceptar.addEventListener("click", tomarEnviarDatos);
-    botonCancelar.addEventListener("click", cancelarEdicion);
+    botonCancelar.addEventListener("click", cancelarEdicion); 
 }
 
 function actualizarValoresCampos() {
@@ -108,17 +108,35 @@ async function tomarEnviarDatos() {
     }
 
     try {
-        await userService.updateUser(idUser, updateUser);
+        Swal.fire({
+            title: "¿Esta seguro de guardar los cambios?",
+            showDenyButton: true,
+            confirmButtonText: "Guardar",
+            denyButtonText: `Cancelar`,
+            customClass: {
+                confirmButton: "btn btn-primary text-white",
+                denyButton: "btn btn-secondary text-white"
+            }
+        }).then( async (result) => {
+            if (result.isConfirmed) {
+                await userService.updateUser(idUser, updateUser);
+                Swal.fire("cambios guardados!", "", "success");
 
-        for (let key in updateUser) {
-            usuario[key] = updateUser[key];
-        }
+                for (let key in updateUser) {
+                    usuario[key] = updateUser[key];
+                }
 
-        localStorage.setItem("user", JSON.stringify(usuario));
+                localStorage.setItem("user", JSON.stringify(usuario));
+
+                actualizarValoresCampos();
+
+            } else if (result.isDenied) {                  
+                cancelarEdicion();
+            }
+        });
+
         
-        actualizarValoresCampos();
-        
-        alert("Se actualizó correctamente");
+
 
         botonEditarPerfil.classList.remove("d-none");
         botonAceptar.classList.add("d-none");
