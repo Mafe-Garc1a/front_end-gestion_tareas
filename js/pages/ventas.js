@@ -5,6 +5,14 @@ let modalInstance = null; // Guardará la instancia del modal de Bootstrap
 let createModalInstance = null; // Guardará la instancia del modal de Bootstrap
 let originalMail = null;
 
+const swalWithBootstrapButtons = Swal.mixin({
+  customClass: {
+    confirmButton: "btn btn-success",
+    cancelButton: "btn btn-secondary"
+  },
+  buttonsStyling: false
+});
+
 function createVentaRow(venta) {
   const fecha = new Date(venta.fecha_hora);
   const fechaFormateada = fecha.toLocaleString('es-ES', {
@@ -75,7 +83,6 @@ function renderPagination(total_pages, currentPage = 1) {
 
   container.innerHTML = "";
 
-// boton anterior
   const prevLi = document.createElement("li");
   prevLi.className = `page-item ${currentPage === 1 ? "disabled" : ""}`;
   prevLi.innerHTML = `
@@ -99,24 +106,23 @@ function renderPagination(total_pages, currentPage = 1) {
     startPage = Math.max(1, endPage - maxVisible + 1);
   }
 
-// primera pagina
   if (startPage > 1) {
     container.appendChild(createPageLi(1, currentPage));
     if (startPage > 2) container.appendChild(createDotsLi());
   }
 
-// numeros pagina
+
   for (let i = startPage; i <= endPage; i++) {
     container.appendChild(createPageLi(i, currentPage));
   }
 
-// ultima pagina
+
   if (endPage < total_pages) {
     if (endPage < total_pages - 1) container.appendChild(createDotsLi());
     container.appendChild(createPageLi(total_pages, currentPage));
   }
 
-// pagina siguiente
+
   const nextLi = document.createElement("li");
   nextLi.className = `page-item ${currentPage === total_pages ? "disabled" : ""}`;
   nextLi.innerHTML = `
@@ -167,11 +173,19 @@ function createDotsLi() {
 
 function filtrarVentas(fechaInicio, fechaFin) {
   if (!fechaInicio || !fechaFin) {
-    Swal.fire({
+    swalWithBootstrapButtons.fire({
       icon: 'info',
       title: 'Error',
-      text: 'Debe seleccionar ambas fechas',
-      confirmButtonColor: 'rgba(51, 136, 221, 1)'
+      text: 'Debe seleccionar ambas fechas'
+    });
+    return;
+  }
+
+  if (fechaInicio > fechaFin) {
+    swalWithBootstrapButtons.fire({
+      icon: 'info',
+      title: 'Error',
+      text: 'La fecha de inicio debe ser anterior a la fecha fin'
     });
     return;
   }
@@ -299,7 +313,7 @@ async function handleStatusSwitch(event) {
 
   // Si la venta estaba cancelada y está intentando habilitar
   if (previousStatus === false && newStatus === true) {
-    Swal.fire({
+    swalWithBootstrapButtons.fire({
       icon: "error",
       title: "Ups...",
       text: "La venta ya fue cancelada, no se puede habilitar",
@@ -309,21 +323,21 @@ async function handleStatusSwitch(event) {
   }
 
   // Confirmación con SweetAlert2
-  const result = await Swal.fire({
+  const result = await swalWithBootstrapButtons.fire({
     title: "¿Estás seguro de cancelar esta venta?",
     text: "Una vez cancelada no se puede revertir.",
     icon: "warning",
     showCancelButton: true,
     confirmButtonText: "Sí, cancelar",
     cancelButtonText: "No, volver",
-    reverseButtons: true,
+    reverseButtons: true
   });
 
   if (result.isConfirmed) {
     try {
       await ventaService.cambiarEstado(ventaId, false);
 
-      Swal.fire({
+      swalWithBootstrapButtons.fire({
         icon: "success",
         title: "Éxito",
         text: "Venta cancelada con éxito",
@@ -332,7 +346,7 @@ async function handleStatusSwitch(event) {
       init();
     } catch (error) {
       console.error("Error al cancelar venta:", error);
-      Swal.fire({
+      swalWithBootstrapButtons.fire({
         icon: "error",
         title: "Ups...",
         text: "Hubo un error al cancelar la venta",
@@ -377,9 +391,11 @@ async function handleCreateVentaClick(event) {
     // Guardar en localStorage
     localStorage.setItem('data_venta', JSON.stringify(dataVenta));
 
-    Swal.fire({
+    swalWithBootstrapButtons.fire({
       icon: 'success',
       title: "Creando venta...",
+      showConfirmButton: false,
+      timer: 1500
     });
 
     const pageToLoad = event.target.dataset.page;
@@ -388,7 +404,7 @@ async function handleCreateVentaClick(event) {
 
   } catch (error) {
     console.error("Error al crear la venta:", error);
-    Swal.fire({
+    swalWithBootstrapButtons.fire({
       icon: "error",
       title: 'Ups...',
       text: "No se pudo crear la venta",
@@ -439,7 +455,7 @@ async function openEditModal(ventaId) {
     modalInstance.show();
   } catch (error) {
     console.error(`Error al obtener datos de la venta ${ventaId}:`, error);
-    Swal.fire({
+    swalWithBootstrapButtons.fire({
       icon: "error",
       title: 'Ups...',
       text: "Error al cargar datos de la venta.",
@@ -459,7 +475,7 @@ async function handleUpdateSubmit(event) {
   try {
     await ventaService.updateVenta(ventaId, ventaData);
     modalInstance.hide();
-    Swal.fire({
+    swalWithBootstrapButtons.fire({
       icon: 'success',
       title: "Exito",
       text: "Venta actualizada exitosamente.",
@@ -467,7 +483,7 @@ async function handleUpdateSubmit(event) {
     init(); // Recargamos la tabla para ver los cambios
   } catch (error) {
     console.error(`Error al actualizar la venta ${ventaId}:`, error);
-    Swal.fire({
+    swalWithBootstrapButtons.fire({
       icon: "error",
       title: 'Ups...',
       text: "Error al actualizar venta.",
@@ -508,7 +524,7 @@ async function cargarMetodosPago() {
 
   } catch (error) {
     console.error('Error al cargar los métodos de pago:', error);
-    Swal.fire({
+    swalWithBootstrapButtons.fire({
       icon: "error",
       title: 'Ups...',
       text: "Error al cargar los métodos de pago.",
@@ -517,7 +533,7 @@ async function cargarMetodosPago() {
 };
 
 
-// Export: manejar clicks en el dropdown (CSV / Excel)
+// // Export: manejar clicks en el dropdown (CSV / Excel)
 //   const pageUtilities = document.querySelector(".page-utilities");
 //   if (pageUtilities) {
 //     pageUtilities.removeEventListener("click", handleExportClick);
@@ -628,7 +644,7 @@ async function cargarMetodosPago() {
 //       URL.revokeObjectURL(url);
 //     } catch (err) {
 //       console.error("No se pudo generar el archivo .xlsx:", err);
-//       Swal.fire({
+//       swalWithBootstrapButtons.fire({
 //         title: "Error al generar .xlsx",
 //         text: err.message || String(err),
 //         icon: "error",
@@ -637,15 +653,29 @@ async function cargarMetodosPago() {
 //   }
 // }
 
-// function handleExportClick(event) {
+// async function handleExportClick(event) {
 //   const item = event.target.closest(".export-format");
 //   if (!item) return;
 //   event.preventDefault();
 //   const fmt = item.dataset.format;
 //   const dateTag = new Date().toISOString().slice(0, 10);
-//   const data = filteredLands && filteredLands.length ? filteredLands : allLands;
+
+//   let response;
+//   // 👉 Si NO hay filtros, llamar API normal
+//   if (!activeFechaInicio || !activeFechaFin) {
+//     response = await fetchVentas(1, 1000);
+//   } 
+//   else {
+//     // REVISAR SI TENGO QUE FORMATEAR LAS FECHAS ANTES DE ENVIAR
+//     const fechaInicio = activeFechaInicio;
+//     const fechaFin = activeFechaFin;
+//     response = await fetchVentas(1, 1000, fechaInicio, fechaFin);
+//   }
+
+//   const data = response?.ventas || [];
+
 //   if (!data || data.length === 0) {
-//     Swal.fire({ title: "No hay datos para exportar.", icon: "info" });
+//     swalWithBootstrapButtons.fire({ title: "No hay datos para exportar.", icon: "info" });
 //     return;
 //   }
 
@@ -655,4 +685,4 @@ async function cargarMetodosPago() {
 //     exportToExcel(data, `ventas_${dateTag}.xls`);
 //   }
 // }
-//end export
+// // end exportar
