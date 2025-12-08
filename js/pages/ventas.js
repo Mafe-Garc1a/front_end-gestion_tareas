@@ -48,7 +48,7 @@ function createVentaRow(venta) {
     `;
 }
 
-
+// Inicializar con fecha actual
 let fecha_actual = new Date();
 let activeFechaInicio = convertirFecha(fecha_actual);
 let activeFechaFin = convertirFecha(fecha_actual);
@@ -76,7 +76,7 @@ async function fetchVentas(page = 1, page_size = 10, fechaInicio = "", fechaFin 
 }
 
 
-// Modificar la función init para que pase correctamente los filtros a la paginación
+// Llamar funcion init de acuerdo al numero de pagina
 function renderPagination(total_pages, currentPage = 1) {
   const container = document.querySelector("#pagination");
   if (!container) return;
@@ -217,12 +217,14 @@ function aplicarFiltros() {
   filtrarVentas(fechaInicio, fechaFin);
 }
 
-
-function convertirFecha(fechaActual) {
-  // dar formato a la fecha YYYY/MM/DD
-  const fecha = fechaActual;
-  const formato = fecha.getFullYear() + "/" +
-    String(fecha.getMonth() + 1).padStart(2, '0') + "/" +
+// funcion para dar formato a la fecha YYYY-MM-DD
+function convertirFecha(fechaEntrante) {
+  console.log("Antes de convertir", fechaEntrante);
+ // Crear el objeto Date sin usar la zona horaria UTC
+  const fecha = new Date(fechaEntrante);
+  console.log("Fecha convertida", fecha);
+  const formato = fecha.getFullYear() + "-" +
+    String(fecha.getMonth() + 1).padStart(2, '0') + "-" +
     String(fecha.getDate()).padStart(2, '0');
   return formato;
 }
@@ -231,6 +233,8 @@ function convertirFecha(fechaActual) {
 async function init(page = 1, page_size = 10, fechaInicio = activeFechaInicio, fechaFin = activeFechaFin) {
   activeFechaInicio = fechaInicio;
   activeFechaFin = fechaFin;
+  document.getElementById("fecha-inicio").value = activeFechaInicio;
+  document.getElementById("fecha-fin").value = activeFechaFin;
 
   const tableBody = document.getElementById("ventas-table-body");
   if (!tableBody) return;
@@ -245,7 +249,7 @@ async function init(page = 1, page_size = 10, fechaInicio = activeFechaInicio, f
       tableBody.innerHTML = ventas.map(createVentaRow).join("");
     } else {
       tableBody.innerHTML =
-        '<tr><td colspan="7" class="text-center">No se encontraron ventas.</td></tr>';
+        '<tr><td colspan="7" class="text-center">No se encontraron ventas en ese rango de fechas.</td></tr>';
     }
 
     renderPagination(data.total_pages || 1, page);
@@ -254,10 +258,13 @@ async function init(page = 1, page_size = 10, fechaInicio = activeFechaInicio, f
     tableBody.innerHTML = `<tr><td colspan="7" class="text-center text-danger">Error al cargar los datos.</td></tr>`;
   }
 
-  // Aplicamos el patrón remove/add para evitar listeners duplicados
+// Aplicamos el patrón remove/add para evitar listeners duplicados
 
   // Boton para crear venta
   const btnCreateVenta = document.getElementById("btnCreateVenta");
+
+  // modal para editar
+  const modalEditar = document.getElementById("edit-venta-modal");
 
   // formulario para actualizar venta
   const editForm = document.getElementById("edit-venta-form");
@@ -278,9 +285,9 @@ async function init(page = 1, page_size = 10, fechaInicio = activeFechaInicio, f
   editForm.removeEventListener("submit", handleUpdateSubmit);
   editForm.addEventListener("submit", handleUpdateSubmit);
 
-  document.getElementById('edit-venta-modal').addEventListener('show.bs.modal', function () {
-    cargarMetodosPago();  // Llamamos a la función para cargar los métodos de pago
-  });
+  // al abrir modal cargar los métodos de pago
+  modalEditar.removeEventListener("show.bs.modal", cargarMetodosPago);
+  modalEditar.addEventListener("show.bs.modal", cargarMetodosPago);
 
   // Botón para aplicar filtro
   const btnAplicarFiltros = document.getElementById("btn-apply-date-filter");
@@ -533,156 +540,241 @@ async function cargarMetodosPago() {
 };
 
 
-// // Export: manejar clicks en el dropdown (CSV / Excel)
-//   const pageUtilities = document.querySelector(".page-utilities");
-//   if (pageUtilities) {
-//     pageUtilities.removeEventListener("click", handleExportClick);
-//     pageUtilities.addEventListener("click", handleExportClick);
-//   }
+// Export: manejar clicks en el dropdown (CSV / Excel)
+  const pageUtilities = document.querySelector(".page-utilities");
+  if (pageUtilities) {
+    pageUtilities.removeEventListener("click", handleExportClick);
+    pageUtilities.addEventListener("click", handleExportClick);
+  }
 
-// function convertToCSV(rows, columns) {
-//   const escapeCell = (val) => {
-//     if (val === null || val === undefined) return "";
-//     const s = String(val);
-//     // Escape quotes
-//     return `"${s.replace(/"/g, '""')}"`;
-//   };
+function convertToCSV(rows, columns) {
+  const escapeCell = (val) => {
+    if (val === null || val === undefined) return "";
+    const s = String(val);
+    // Escape quotes
+    return `"${s.replace(/"/g, '""')}"`;
+  };
 
-//   const header = columns.map((c) => escapeCell(c.header)).join(",");
-//   const body = rows
-//     .map((row) =>
-//       columns
-//         .map((c) => {
-//           const v = typeof c.key === "function" ? c.key(row) : row[c.key];
-//           return escapeCell(v);
-//         })
-//         .join(",")
-//     )
-//     .join("\n");
-//   return `${header}\n${body}`;
-// }
+  const header = columns.map((c) => escapeCell(c.header)).join(",");
+  const body = rows
+    .map((row) =>
+      columns
+        .map((c) => {
+          const v = typeof c.key === "function" ? c.key(row) : row[c.key];
+          return escapeCell(v);
+        })
+        .join(",")
+    )
+    .join("\n");
+  return `${header}\n${body}`;
+}
 
-// function downloadBlob(content, mimeType, filename) {
-//   const blob = new Blob([content], { type: mimeType });
-//   const url = URL.createObjectURL(blob);
-//   const a = document.createElement("a");
-//   a.href = url;
-//   a.download = filename;
-//   document.body.appendChild(a);
-//   a.click();
-//   a.remove();
-//   URL.revokeObjectURL(url);
-// }
+function downloadBlob(content, mimeType, filename) {
+  const blob = new Blob([content], { type: mimeType });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+}
 
-// function exportToCSV(data, filename = "ventas.csv") {
-//   const columns = [
-//     { header: "ID", key: "id_venta" },
-//     { header: "fecha_hora", key: "fecha_hora" },
-//     { header: "nombre_usuario", key: "nombre_usuario" },
-//     { header: "metodo_pago", key: "metodo_pago" },
-//     { header: "total", key: "total" },
-//     { header: "Estado", key: (r) => (r.estado ? "Activo" : "Inactivo") },
-//   ];
-//   const csv = convertToCSV(data, columns);
-//   downloadBlob(csv, "text/csv;charset=utf-8;", filename);
-// }
+function exportToCSV(data, filename = "ventas.csv") {
+  const columns = [
+    { header: "ID", key: "id_venta" },
+    { header: "fecha_hora", key: "fecha_hora" },
+    { header: "nombre_usuario", key: "nombre_usuario" },
+    { header: "metodo_pago", key: "metodo_pago" },
+    { header: "total", key: "total" },
+    { header: "Estado", key: (r) => (r.estado ? "Activo" : "Inactivo") },
+  ];
+  const csv = convertToCSV(data, columns);
+  downloadBlob(csv, "text/csv;charset=utf-8;", filename);
+}
 
-// async function exportToExcel(data, filename = "ventas.xlsx") {
-//   // Intentar usar SheetJS (XLSX) para crear un .xlsx real en el navegador.
-//   // Si no está cargado, lo cargamos dinámicamente desde CDN.
-//   const loadSheetJS = () =>
-//     new Promise((resolve, reject) => {
-//       if (window.XLSX) return resolve(window.XLSX);
-//       const script = document.createElement("script");
-//       script.src =
-//         "https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js";
-//       script.onload = () => resolve(window.XLSX);
-//       script.onerror = (e) => reject(new Error("No se pudo cargar SheetJS"));
-//       document.head.appendChild(script);
-//     });
+async function exportToExcel(data, filename = "ventas.xlsx") {
+  // Intentar usar SheetJS (XLSX) para crear un .xlsx real en el navegador.
+  // Si no está cargado, lo cargamos dinámicamente desde CDN.
+  const loadSheetJS = () =>
+    new Promise((resolve, reject) => {
+      if (window.XLSX) return resolve(window.XLSX);
+      const script = document.createElement("script");
+      script.src =
+        "https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js";
+      script.onload = () => resolve(window.XLSX);
+      script.onerror = (e) => reject(new Error("No se pudo cargar SheetJS"));
+      document.head.appendChild(script);
+    });
 
-//   try {
-//     await loadSheetJS();
-//   } catch (err) {
-//     console.warn(
-//       "SheetJS no disponible, se usará exportación CSV en su lugar",
-//       err
-//     );
-//     // Fallback al CSV con extensión xlsx si falla la carga
-//     exportToCSV(data, filename.replace(/\.xlsx?$/, ".csv"));
-//     return;
-//   }
+  try {
+    await loadSheetJS();
+  } catch (err) {
+    console.warn(
+      "SheetJS no disponible, se usará exportación CSV en su lugar",
+      err
+    );
+    // Fallback al CSV con extensión xlsx si falla la carga
+    exportToCSV(data, filename.replace(/\.xlsx?$/, ".csv"));
+    return;
+  }
 
-//   // Mapear datos a objetos planos para json_to_sheet
-//   const rows = data.map((r) => ({
-//     ID: r.id_venta,
-//     fecha_hora: r.fecha_hora,
-//     vendedor: r.nombre_usuario,
-//     metodo_pago: r.metodo_pago,
-//     Total: r.total,
-//     estado: r.estado ? "Activo" : "Inactivo",
-//   }));
+  // Mapear datos a objetos planos para json_to_sheet
+  const rows = data.map((r) => ({
+    ID: r.id_venta,
+    fecha_hora: r.fecha_hora,
+    vendedor: r.nombre_usuario,
+    metodo_pago: r.metodo_pago,
+    Total: r.total,
+    estado: r.estado ? "Activo" : "Inactivo",
+  }));
 
-//   const ws = XLSX.utils.json_to_sheet(rows);
-//   const wb = XLSX.utils.book_new();
-//   XLSX.utils.book_append_sheet(wb, ws, "Ventas");
+  const ws = XLSX.utils.json_to_sheet(rows);
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, "Ventas");
 
-//   try {
-//     XLSX.writeFile(wb, filename);
-//   } catch (e) {
-//     // Algunos navegadores / entornos pueden requerir otra ruta: crear blob desde write
-//     try {
-//       const wbout = XLSX.write(wb, { bookType: "xlsx", type: "array" });
-//       const blob = new Blob([wbout], { type: "application/octet-stream" });
-//       const url = URL.createObjectURL(blob);
-//       const a = document.createElement("a");
-//       a.href = url;
-//       a.download = filename;
-//       document.body.appendChild(a);
-//       a.click();
-//       a.remove();
-//       URL.revokeObjectURL(url);
-//     } catch (err) {
-//       console.error("No se pudo generar el archivo .xlsx:", err);
-//       swalWithBootstrapButtons.fire({
-//         title: "Error al generar .xlsx",
-//         text: err.message || String(err),
-//         icon: "error",
-//       });
-//     }
-//   }
-// }
+  try {
+    XLSX.writeFile(wb, filename);
+  } catch (e) {
+    // Algunos navegadores / entornos pueden requerir otra ruta: crear blob desde write
+    try {
+      const wbout = XLSX.write(wb, { bookType: "xlsx", type: "array" });
+      const blob = new Blob([wbout], { type: "application/octet-stream" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error("No se pudo generar el archivo .xlsx:", err);
+      swalWithBootstrapButtons.fire({
+        title: "Error al generar .xlsx",
+        text: err.message || String(err),
+        icon: "error",
+      });
+    }
+  }
+}
 
-// async function handleExportClick(event) {
-//   const item = event.target.closest(".export-format");
-//   if (!item) return;
-//   event.preventDefault();
-//   const fmt = item.dataset.format;
-//   const dateTag = new Date().toISOString().slice(0, 10);
+async function exportToPDF(data, filename = "ventas.pdf") {
+  const sanitizedData = data.map(row => ({
+    id_venta: row.id_venta || "",
+    fecha_hora: row.fecha_hora || "",
+    vendedor: row.nombre_usuario || "",
+    metodo_pago: row.metodo_pago || "",
+    total: row.total || "",
+    estado: row.estado ? "Activo" : "Inactivo" || "",
+  }));
 
-//   let response;
-//   // 👉 Si NO hay filtros, llamar API normal
-//   if (!activeFechaInicio || !activeFechaFin) {
-//     response = await fetchVentas(1, 1000);
-//   } 
-//   else {
-//     // REVISAR SI TENGO QUE FORMATEAR LAS FECHAS ANTES DE ENVIAR
-//     const fechaInicio = activeFechaInicio;
-//     const fechaFin = activeFechaFin;
-//     response = await fetchVentas(1, 1000, fechaInicio, fechaFin);
-//   }
+  if (!window.jspdf) {
+    await loadScript("https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js");
+  }
+  // Cargar autoTable desde jsDelivr
+  if (!window.jspdfAutoTable) {
+    await loadScript("https://cdn.jsdelivr.net/npm/jspdf-autotable@3.8.4/dist/jspdf.plugin.autotable.min.js");
+  }
 
-//   const data = response?.ventas || [];
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF();
 
-//   if (!data || data.length === 0) {
-//     swalWithBootstrapButtons.fire({ title: "No hay datos para exportar.", icon: "info" });
-//     return;
-//   }
+  // Verificar que autoTable exista
+  if (typeof doc.autoTable !== "function") {
+    console.error("autoTable no se cargó correctamente");
+    return;
+  }
 
-//   if (fmt === "csv") {
-//     exportToCSV(data, `ventas_${dateTag}.csv`);
-//   } else if (fmt === "excel") {
-//     exportToExcel(data, `ventas_${dateTag}.xls`);
-//   }
-// }
-// // end exportar
+  doc.setFontSize(16);
+  doc.text("Reporte de ventas", 14, 15);
+
+  const columns = [
+    { header: "ID", dataKey: "id_venta" },
+    { header: "Fecha y hora", dataKey: "fecha_hora" },
+    { header: "Vendedor", dataKey: "vendedor" },
+    { header: "Metodo pago", dataKey: "metodo_pago" },
+    { header: "Total", dataKey: "total" },
+    { header: "Estado", dataKey: "estado" },
+  ];
+
+  doc.autoTable({ columns, body: sanitizedData, startY: 25, styles: { fontSize: 9 } });
+  doc.save(filename);
+}
+
+function loadScript(src) {
+  return new Promise((resolve, reject) => {
+    const script = document.createElement("script");
+    script.src = src;
+    script.onload = resolve;
+    script.onerror = () => reject(`Error cargando script: ${src}`);
+    document.body.appendChild(script);
+  });
+}
+
+
+async function handleExportClick(event) {
+  const item = event.target.closest(".export-format");
+  if (!item) return;
+  event.preventDefault();
+  const fmt = item.dataset.format;
+  const dateTag = new Date().toISOString().slice(0, 10);
+
+  let response;
+  // Si no se aplicaron filtros, llamar API con las ventas del dia de hoy
+  if (!activeFechaInicio || !activeFechaFin) {
+    let fecha_actual = new Date();
+    fecha_inicio = convertirFecha(fecha_actual);
+    fecha_fin = convertirFecha(fecha_actual);
+    response = await obtenerVentasExport(fecha_inicio, fecha_fin);
+  } 
+  else {
+    // la fecha ya esta en formato YYYY/MM/DD por eso no se convierte
+    const fechaInicio = activeFechaInicio;
+    const fechaFin = activeFechaFin;
+
+    response = await obtenerVentasExport(fechaInicio, fechaFin);
+  }
+
+  const data = response || [];
+  
+  if (!data || data.length === 0) {
+    swalWithBootstrapButtons.fire({ title: "No hay datos para exportar.", icon: "info" });
+    return;
+  }
+
+  console.log("Datos a imprimir:", data);
+  if (fmt === "csv") {
+    exportToCSV(data, `ventas_${dateTag}.csv`);
+  } else if (fmt === "excel") {
+    exportToExcel(data, `ventas_${dateTag}.xls`);
+  } else if (fmt === "pdf") {
+    exportToPDF(data, `ventas_${dateTag}.pdf`);
+  }
+}
+// end exportar
+
+
+
+async function obtenerVentasExport(fechaInicio = "", fechaFin = "") {
+  "Esta funcion se hizo con el proposito de obtener ventas solo para exportar; ya que utiliza un endpoint sin paginacion"
+  try {
+    console.log("ENTRO A OBTENER VENTAS EXPORTAR");
+    let response;
+    if (fechaInicio && fechaFin) {
+      response = await ventaService.getVentasByDateSinPag(fechaInicio, fechaFin);
+    }
+
+    if (!response || response.length === 0) {
+      return [];
+    }
+    console.log(response);
+    return response;
+  } catch (error) {
+    if (error.message.includes("No hay ventas en ese rango de fechas") || error.response?.status === 404) {
+      return [];
+    }
+    throw error;
+  }
+}

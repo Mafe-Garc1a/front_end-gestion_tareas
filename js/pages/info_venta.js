@@ -1,7 +1,7 @@
 import { ventaService } from "../api/venta.service.js";
 import {loadContent} from "../main.js";
 
-let modalInstance = null; // Guardará la instancia del modal de Bootstrap
+let modalInstance = null;
 let createModalInstance = null;
 let originalMail = null;
 
@@ -161,6 +161,13 @@ function calcularTotal(detalles){
     totalElement.textContent = `$${totalVenta.toLocaleString('es-CO')}`;
 }
 
+const swalWithBootstrapButtonsVenta = Swal.mixin({
+  customClass: {
+    confirmButton: "btn btn-success ms-2",
+    cancelButton: "btn btn-secondary",
+  },
+  buttonsStyling: false,
+});
 
 //funcion para inicializar
 async function init() {
@@ -171,7 +178,11 @@ async function init() {
 
     if (!idVentaVer) {
         console.log("No se encontró data de venta");
-        alert("Error: No se encontró información de la venta");
+        swalWithBootstrapButtonsVenta.fire({
+            icon: "error",
+            title: "Ups...",
+            text: "No se encontró información de la venta, intentalo de nuevo"
+        });
         return;
 
     } else {
