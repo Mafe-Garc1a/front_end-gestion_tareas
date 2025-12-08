@@ -19,11 +19,12 @@ export const detalleVentaService = {
         const endpoint = `/detalle_salvamento/all-products-salvamento`; 
         return request(endpoint); 
     },
+
     getDetalleVenta: (id_detalle, tipo) => {
-        if(tipo == "huevos"){
+        if(tipo == "Huevos"){
             const endpoint = `/detalle_huevos/by-id_detalle?id_detalle=${id_detalle}`;
             return request(endpoint);
-        }else if(tipo == "salvamento"){
+        }else if(tipo == "Salvamento"){
             const endpoint = `/detalle_salvamento/by-id_detalle?id_detalle=${id_detalle}`;
             return request(endpoint);
         }
@@ -48,25 +49,29 @@ export const detalleVentaService = {
     },
 
     updateDetalle: (id_detalle, data, tipo) => {
-        if(tipo == "huevos"){
+        if(tipo == "Huevos"){
             return request(`/detalle_huevos/by-id/${id_detalle}`, {
                 method: 'PUT',
                 body: JSON.stringify(data),
             });
-        }else if(tipo == "salvamento"){
+        }
+
+        if(tipo == "Salvamento"){
             return request(`/detalle_salvamento/${id_detalle}`, {
                 method: 'PUT',
                 body: JSON.stringify(data),
             });
         }
+
     },
 
+
     deleteDetalle: (id_detalle, tipo) =>{
-        if(tipo == "huevos"){
+        if(tipo == "Huevos"){
             return request(`/detalle_huevos/by-id/${id_detalle}`, {
                 method: 'DELETE'
             });
-        }else if(tipo == "salvamento"){
+        }else if(tipo == "Salvamento"){
             return request(`/detalle_salvamento/${id_detalle}`, {
                 method: 'DELETE'
             });

@@ -79,7 +79,7 @@
                                 <th scope="col" class="fw-semibold">Producto</th>
                                 <th scope="col" class="fw-semibold">Cantidad</th>
                                 <th scope="col" class="fw-semibold">Precio Unit.</th>
-                                <th scope="col" class="fw-semibold">Descuento (%)</th>
+                                <th scope="col" class="fw-semibold">Descuento</th>
                                 <!-- <th scope="col">Subtotal</th> -->
                                 <th scope="col" class="fw-semibold">Acciones</th>
                             </tr>
@@ -115,42 +115,42 @@
 </div><!-- end row -->
 
 <div class="modal fade" id="edit-detalle-modal" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title">Editar Detalle</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        <form id="edit-detalle-form">
-          <input type="hidden" id="edit-detalle-id">
+    <div class="modal-dialog">
+        <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title">Editar Detalle</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+            <form id="edit-detalle-form">
+            <input type="hidden" id="edit-detalle-id">
 
-          <div class="mb-3">
-            <label for="select-edit-producto" class="form-label">Producto</label>
-            <select class="form-control" id="select-edit-producto">
+            <div class="mb-3">
+                <label for="select-edit-producto" class="form-label">Producto</label>
+                <select class="form-control" id="select-edit-producto">
 
-            </select>
-          </div>
-          <div class="mb-3">
-            <label for="edit-cantidad" class="form-label">Cantidad</label>
-            <input type="number" class="form-control" id="edit-cantidad">
-          </div>
-          <div class="mb-3">
-            <label for="edit-descuento" class="form-label">Descuento</label>
-            <input type="number" class="form-control" id="edit-descuento">
-          </div>
-          <div class="mb-3">
-            <label for="edit-precio_unitario" class="form-label">Precio unitario</label>
-            <input type="number" class="form-control" id="edit-precio_unitario">
-          </div>
+                </select>
+            </div>
+            <div class="mb-3">
+                <label for="edit-cantidad" class="form-label">Cantidad</label>
+                <input type="number" class="form-control" id="edit-cantidad">
+            </div>
+            <div class="mb-3">
+                <label for="edit-descuento" class="form-label">Descuento %</label>
+                <input type="number" class="form-control" id="edit-descuento">
+            </div>
+            <div class="mb-3">
+                <label for="edit-precio_unitario" class="form-label">Precio unitario</label>
+                <input type="number" class="form-control" id="edit-precio_unitario">
+            </div>
 
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-            <button type="submit" class="btn btn-primary">Guardar Cambios</button>
-          </div>
-        </form>
-      </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+            </div>
+            </form>
+        </div>
+        </div>
     </div>
-  </div>
 </div>
 

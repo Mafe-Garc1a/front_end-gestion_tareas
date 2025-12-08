@@ -8,6 +8,8 @@ let originalMail = null;
 let detallesVenta = [];
 let idVentaReciente = null; 
 let ventaDataGlobal = null;
+
+
 function obtenerDatosVenta() {
     try {
         const ventaData = localStorage.getItem('data_venta');
@@ -28,7 +30,7 @@ function obtenerDatosVenta() {
 // Función para mostrar la información de la venta
 function mostrarInformacionVenta(ventaData) {
     const container = document.getElementById('venta-info-container');
-   
+
     if (!ventaData) {
         container.innerHTML = `
             <div class="col-12 text-center">
@@ -79,7 +81,7 @@ function createDetalles() {
     const botonAgregar = document.getElementById('createDetalle'); 
     botonAgregar.addEventListener('click', async function(event){
         console.log('Si, soy el botón AJAJAJAJ'); 
-        
+
         const idProducto = document.getElementById('productos_select');
         const cantidad = document.getElementById('cantidad').value;
         const valorDescuento = document.getElementById('descuento').value || 0;
@@ -88,7 +90,6 @@ function createDetalles() {
 
         //capturo valores especifocs del select de productos: 
         let nombre_producto_seleccionado = idProducto.options[idProducto.selectedIndex].dataset.nombre;
-        
         
         if(idProducto == "" || cantidad == "" || precioVenta == ""){
             console.log('._., ciego');
@@ -101,13 +102,15 @@ function createDetalles() {
         }
 
         let descuentoPesos = (precioVenta * valorDescuento)/100; 
-        const detallesData = {
+        
+        const detallesData = { 
             id_producto: idProducto.value,
             cantidad: cantidad,
             id_venta: idVentaReciente, 
             valor_descuento: descuentoPesos,
             precio_venta: precioVenta
         };
+
         const swalWithBootstrapButtonsCreateDetalle = Swal.mixin({
             customClass: {
                 confirmButton: "btn btn-success ms-2",
@@ -115,23 +118,46 @@ function createDetalles() {
             },
             buttonsStyling: false
         });
+
         try {
             botonAgregar.disabled = true;
             botonAgregar.textContent = 'Agregando...';
             
+            let respuesta_crear_detalle;
+            let id_creado; 
             if(selectDetalle === '1'){
-                await detalleVentaService.createDetalleHuevos(detallesData); 
-                console.log('Detalle Huevo creado exitosamente');
-            }else if (selectDetalle === "2"){ 
-                await detalleVentaService.createDetalleSalvamento(detallesData); 
-                console.log('Detalle Salvamento creado exitosamente');
+                respuesta_crear_detalle = await detalleVentaService.createDetalleHuevos(detallesData); 
+                id_creado = respuesta_crear_detalle.id_detalle_huevo
+                // console.log('Detalle Huevo creado exitosamente', respuesta_crear_detalle);
+                console.log('si soy ', id_creado); 
+
+            }else if (selectDetalle === '2'){ 
+                respuesta_crear_detalle =  await detalleVentaService.createDetalleSalvamento(detallesData); 
+                id_creado = respuesta_crear_detalle.id_detalle_salvamento
+                console.log('q pasouuu id', id_creado); 
+                console.log('Detalle Salvamento creado exitosamente', respuesta_crear_detalle);
             }
             
+            let data = {
+                id_producto: idProducto.value,
+                id_detalle : id_creado, 
+                tipo_detalle: selectDetalle === '1' ? 'Huevos' : 'Salvamento', 
+                nombre_producto: nombre_producto_seleccionado,
+                cantidad: cantidad,
+                id_venta: idVentaReciente, 
+                valor_descuento: descuentoPesos,
+                descuento_porcentaje: valorDescuento,
+                precio_venta: precioVenta
+            }
+            detallesVenta.push(data); 
+            console.log(detallesVenta);
             imprimirDetalles()
+
             document.getElementById('productos_select').value = "";
             document.getElementById('cantidad').value = "";
             document.getElementById('descuento').value = "";
             document.getElementById('precio_unitario').value = "";
+
         } catch (error) {
             console.error("Error:", error);
             await swalWithBootstrapButtonsCreateDetalle.fire({
@@ -150,17 +176,15 @@ function createDetalles() {
 async function imprimirDetalles(){
     const tableBody = document.getElementById('detalles-table-body');
     tableBody.innerHTML = '';
-
-    let detalles = await detalleVentaService.getDettallesVenta(idVentaReciente);
-    
-    detalles.forEach(element => {
+    // let detalles = await detalleVentaService.getDettallesVenta(idVentaReciente);
+    detallesVenta.forEach(element => {
         const fila = document.createElement('tr');
 
         const colTipo = document.createElement('td');
-        colTipo.textContent = element.tipo;
+        colTipo.textContent = element.tipo_detalle;
 
         const colProducto = document.createElement('td');
-        colProducto.textContent = element.descripcion;
+        colProducto.textContent = element.nombre_producto;
 
         const colCantidad = document.createElement('td');
         colCantidad.textContent = element.cantidad;
@@ -176,13 +200,13 @@ async function imprimirDetalles(){
         const botonEdit = document.createElement('button');
         botonEdit.classList.add('btn', 'btn-success', 'btn-sm', 'btn-edit-detalle');
         botonEdit.setAttribute('data-id-producto', element.id_producto);
-        botonEdit.setAttribute('data-tipo-producto', element.tipo);
+        botonEdit.setAttribute('data-tipo-producto', element.tipo_detalle);
         botonEdit.setAttribute('data-detalle-id', element.id_detalle);
         botonEdit.innerHTML = '<i class="fa-regular fa-pen-to-square"></i>';
 
         const botonDelete = document.createElement('button');
         botonDelete.classList.add('btn', 'btn-secondary', 'btn-sm', 'ms-2', 'btn-delete-detalle');
-        botonDelete.setAttribute('data-tipo-producto', element.tipo);
+        botonDelete.setAttribute('data-tipo-producto', element.tipo_detalle);
         botonDelete.setAttribute('data-detalle-id', element.id_detalle);
         botonDelete.innerHTML = '<i class="fa-regular fa-trash-can"></i>';
 
@@ -198,10 +222,20 @@ async function imprimirDetalles(){
         
         tableBody.appendChild(fila);
     });
-    calcularTotal(detalles)
+
+    calcularTotal(detallesVenta)
 }
 
 function calcularTotal(detalles){
+    const descuentoElement = document.getElementById('total-descuento');
+    const totalElement = document.getElementById('total-venta');
+
+    if(detalles.length === 0){
+        descuentoElement.textContent = "$0";
+        totalElement.textContent = "$0";
+        return; 
+    }
+
     let totalVenta = 0;
     let totalDescuento = 0;
     detalles.forEach(producto => {
@@ -209,27 +243,32 @@ function calcularTotal(detalles){
         totalVenta += subtotal;
         totalDescuento += producto.valor_descuento * producto.cantidad;
     });
-    const descuentoElement = document.getElementById('total-descuento');
+    
     descuentoElement.textContent = `$${totalDescuento.toLocaleString('es-CO')}`;
-
-    const totalElement = document.getElementById('total-venta');
     totalElement.textContent = `$${totalVenta.toLocaleString('es-CO')}`;
 }
 
-//Modales update
-
+//Modales update, función q se activa cuando le den click al icono de editar
 async function handleTableClick(event) {
   // Manejador para el botón de editar
+    console.log("aqui toooy")
     const editButton = event.target.closest('.btn-edit-detalle');
     if (editButton) {
-        const id = editButton.dataset.detalleId;
-        let tipo_product_edit = editButton.dataset.tipoProducto;
+        // Para debuggear, muestra TODOS los atributos data-*
+        console.log("Todos los dataset del botón:", editButton.dataset);
+
+        const id = editButton.dataset.detalleId;          
+        let tipo_product_edit = editButton.dataset.tipoProducto;  
         let id_producto = editButton.dataset.idProducto;
 
+        console.log(`¿quien eres? q soy????`); 
+        // console.log(id, tipo_product_edit, id_producto)
+        //************************************************* */
         console.log(`Edit detalle with id: ${id}`);
         openEditModal(id, tipo_product_edit, id_producto);
         return;
     }
+
     const deleteButton = event.target.closest('.btn-delete-detalle');
     if(deleteButton){
         let tipo_producto_delete = deleteButton.dataset.tipoProducto;
@@ -248,12 +287,17 @@ async function handleTableClick(event) {
         if (confirmacion.isConfirmed) {
             try {
                 await detalleVentaService.deleteDetalle(id_detalle_delete, tipo_producto_delete);
+                detallesVenta = detallesVenta.filter(detalle => detalle.id_detalle != id_detalle_delete);
+
                 Swal.fire({
                     icon: 'success',
-                    title: "Exito",
+                    title: "Éxito",
                     text: "Detalle eliminado correctamente",
                 });
-                imprimirDetalles()
+
+                imprimirDetalles(detallesVenta);
+                calcularTotal(detallesVenta);
+
             } catch (error) {
                 console.error(`Error al eliminar el detalle ${id_detalle_delete}:`, error);
                 Swal.fire({
@@ -261,100 +305,230 @@ async function handleTableClick(event) {
                     title: 'Ups...',
                     text: "No se pudo eliminar el detalle.",
                 });
-                // Revertir el switch si hay error
             }
         }
     }
 }
 
+// función asincronica si se traen los datos desde el back
+// async function openEditModal(id, tipo_product, id_producto) {
+//     console.log(id, tipo_product, id_producto);  
+//     const modalElement = document.getElementById('edit-detalle-modal');
+
+//     if (!modalInstance) {
+//         modalInstance = new bootstrap.Modal(modalElement);
+//     }
+//     try {
+//         const select_edit = document.getElementById("select-edit-producto");
+//         const detalle = await detalleVentaService.getDetalleVenta(id, tipo_product);
+//         console.log(detalle); 
+
+//         let productos_select_edit;
+
+//         if(tipo_product == 'Huevos'){
+//             productos_select_edit = await detalleVentaService.getProductosStock()
+//         }else if(tipo_product == 'Salvamento'){
+//             productos_select_edit = await detalleVentaService.getProductosSalvamento()
+
+//         }
+        
+//         select_edit.innerHTML = '';
+//         productos_select_edit.forEach(element => {
+//             const option_edit = document.createElement("option");
+//             option_edit.value =  tipo_product == 'Huevos' ? element.id_producto : element.id_salvamento;
+//             option_edit.dataset.tipoProducto = tipo_product;
+//             option_edit.textContent = tipo_product == 'Huevos' ? `Huevo ${element.color} ${element.tamanio} ${element.unidad_medida}` : element.raza;
+
+//             select_edit.appendChild(option_edit);
+//         });
+
+//         select_edit.value = id_producto;
+
+
+//         const input_edit_cantidad = document.getElementById("edit-cantidad");
+//         const input_edit_descuento = document.getElementById("edit-descuento");
+//         const input_edit_precio_unitario = document.getElementById("edit-precio_unitario");
+//         const input_id_detalle_edit = document.getElementById("edit-detalle-id");
+
+//         console.log("acaaaaaaa", detalle);
+//         input_edit_cantidad.value = detalle.cantidad;
+//         input_edit_descuento.value = detalle.valor_descuento;
+//         input_edit_precio_unitario.value = detalle.precio_venta;
+//         input_id_detalle_edit.value = detalle.id_detalle;
+
+//         // console.log("aqui: ", detalle)
+//         modalInstance.show();
+
+//     } catch (error) {
+//         console.error(`Error al obtener datos del detalle ${detalle.id_detalle}`, error);
+//         Swal.fire({
+//             icon: "error",
+//             title: 'Ups...',
+//             text: "Error al obtener datos del detalle",
+//         });
+//     }
+// }
+
+//función asincronica si se traen los datos desde el array
 async function openEditModal(id, tipo_product, id_producto) {
+
     const modalElement = document.getElementById('edit-detalle-modal');
+
     if (!modalInstance) {
         modalInstance = new bootstrap.Modal(modalElement);
     }
-    try {
-        const select_edit = document.getElementById("select-edit-producto");
 
+    // Buscar el detalle dentro del array detallesVenta
+    const detalleEncontrado = detallesVenta.find(det => det.id_detalle == id);
 
-        const detalle = await detalleVentaService.getDetalleVenta(id, tipo_product);
-        let productos_select_edit;
-        if(tipo_product == 'huevos'){
-            productos_select_edit = await detalleVentaService.getProductosStock()
-        }else if(tipo_product == 'salvamento'){
-            productos_select_edit = await detalleVentaService.getProductosSalvamento()
-
-        }
-        
-        
-        select_edit.innerHTML = '';
-        productos_select_edit.forEach(element => {
-            const option_edit = document.createElement("option");
-            option_edit.value =  tipo_product == 'huevos' ? element.id_producto : element.id_salvamento;
-            option_edit.dataset.tipoProducto = tipo_product;
-            option_edit.textContent = tipo_product == 'huevos' ? `Huevo ${element.color} ${element.tamanio} ${element.unidad_medida}` : element.raza;
-
-            select_edit.appendChild(option_edit);
-
-        });
-        select_edit.value = id_producto;
-
-        const input_edit_cantidad = document.getElementById("edit-cantidad");
-        const input_edit_descuento = document.getElementById("edit-descuento");
-        const input_edit_precio_unitario = document.getElementById("edit-precio_unitario");
-        const input_id_detalle_edit = document.getElementById("edit-detalle-id");
-
-        console.log("acaaaaaaa", detalle);
-        input_edit_cantidad.value = detalle.cantidad;
-        input_edit_descuento.value = detalle.valor_descuento;
-        input_edit_precio_unitario.value = detalle.precio_venta;
-        input_id_detalle_edit.value = detalle.id_detalle;
-
-        console.log("aqui: ", detalle)
-        modalInstance.show();
-    } catch (error) {
-        console.error(`Error al obtener datos del detalle ${detalle.id_detalle}`, error);
+    if (!detalleEncontrado) {
         Swal.fire({
             icon: "error",
             title: 'Ups...',
-            text: "Error al obtener datos del detalle",
+            text: "No pude encontrar el detalle seleccionado",
         });
+        return;
     }
+
+    const select_edit = document.getElementById("select-edit-producto");
+    const input_edit_cantidad = document.getElementById("edit-cantidad");
+    const input_edit_descuento = document.getElementById("edit-descuento");
+    const input_edit_precio_unitario = document.getElementById("edit-precio_unitario");
+    const input_id_detalle_edit = document.getElementById("edit-detalle-id");
+
+    let productosDisponibles = [];
+
+    if (tipo_product === "Huevos") {
+        productosDisponibles = await detalleVentaService.getProductosStock();
+    } else {
+        productosDisponibles = await detalleVentaService.getProductosSalvamento();
+    }
+
+    select_edit.innerHTML = '';
+
+    productosDisponibles.forEach(producto => {
+        const option = document.createElement("option");
+
+        option.value =
+            tipo_product == "Huevos"
+                ? producto.id_producto
+                : producto.id_salvamento;
+        
+        option.dataset.tipoProducto = tipo_product;
+
+        option.textContent =
+            tipo_product == "Huevos"
+                ? `Huevo ${producto.color} ${producto.tamanio} ${producto.unidad_medida}`
+                : producto.raza;
+
+        select_edit.appendChild(option);
+    });
+
+    select_edit.value = id_producto;
+
+    input_edit_cantidad.value = detalleEncontrado.cantidad;
+    input_edit_descuento.value = detalleEncontrado.descuento_porcentaje;
+    input_edit_precio_unitario.value = detalleEncontrado.precio_venta;
+    input_id_detalle_edit.value = detalleEncontrado.id_detalle;
+
+    modalInstance.show();
 }
 
 async function handleUpdateSubmit(event) {
-  event.preventDefault();
-  const detalleId = document.getElementById('edit-detalle-id').value;
-  const selectProductoEdit = document.getElementById('select-edit-producto');
-  
-  const selectedOption = selectProductoEdit.options[selectProductoEdit.selectedIndex];
-  
-  const tipoProducto = selectedOption.dataset.tipoProducto;
-  const updatedData = {
-    id_producto: document.getElementById('select-edit-producto').value,
-    cantidad: document.getElementById('edit-cantidad').value,
-    valor_descuento: document.getElementById('edit-descuento').value,
-    precio_venta : document.getElementById('edit-precio_unitario').value
-  };
+    event.preventDefault();
+    // captutamos lo indispensable
+    const detalleId = document.getElementById('edit-detalle-id').value;
+    const selectProductoEdit = document.getElementById('select-edit-producto');
+    const selectedOption = selectProductoEdit.options[selectProductoEdit.selectedIndex];
+    const tipoProducto = selectedOption.dataset.tipoProducto;
 
-  try {
-    await detalleVentaService.updateDetalle(detalleId, updatedData, tipoProducto);
-    modalInstance.hide();
-    Swal.fire({
-      icon: 'success',
-      title: "Exito",
-      text: "Detalle actualizado exitosamente.",
+    //capturamos los posibles inputs q puede manipular
+    const id_producto_cambio = parseInt(document.getElementById('select-edit-producto').value);
+    const cantidad_cambio = parseInt(document.getElementById('edit-cantidad').value);
+    const descuento_cambio = parseFloat(document.getElementById('edit-descuento').value);
+    const precio_cambio = parseFloat(document.getElementById('edit-precio_unitario').value); 
+
+    const posibles_errores = []; 
+    if (cantidad_cambio <= 0) {
+        posibles_errores.push('Cantidad debe ser mayor a 0');
+    }
+    if (precio_cambio <= 0) {
+        posibles_errores.push('Precio debe ser mayor a 0');
+    }
+    if (descuento_cambio < 0) {
+        posibles_errores.push('Descuento debe ser mayor o igual a 0');
+    }
+
+    if(posibles_errores.length > 0){
+        Swal.fire({
+            icon: "warning",
+            title: "Datos incorrectos",
+            text: posibles_errores.join('\n'), 
+        });
+        return;
+    }
+
+    let descuento_cambio_en_pesos = (precio_cambio * descuento_cambio)/100; 
+
+    const updatedData = {
+        id_producto: id_producto_cambio,
+        cantidad: cantidad_cambio,
+        valor_descuento:descuento_cambio_en_pesos,
+        precio_venta: precio_cambio
+    };
+
+    const swalInstance = Swal.fire({
+        title: 'Actualizando...',
+        html: '<div class="spinner-border text-primary" role="status"></div>',
+        showConfirmButton: false,
+        allowOutsideClick: false,
+        backdrop: 'rgba(0,0,0,0.4)'
     });
-    await imprimirDetalles(); // Recargamos la tabla para ver los cambios
-  } catch (error) {
-    console.error(`Error al actualizar detalle ${detalleId}:`, error);
-    Swal.fire({
-        icon: "error",
-        title: 'Ups...',
-        text: "Error al actualizar detalle",
-    });
-  }
+
+    try {
+
+        let hola = await detalleVentaService.updateDetalle(detalleId, updatedData, tipoProducto);
+        console.log(hola); 
+
+        const nombre_producto_nuevo = selectedOption.textContent.trim();
+        // const nombre_producto_nuevo = selectProductoEdit.options[selectProductoEdit.selectedIndex].dataset.nombre;
+
+        detallesVenta = detallesVenta.map(detalle => {
+            if(detalle.id_detalle == detalleId){
+                return {
+                    ...detalle,
+                    id_producto: id_producto_cambio,
+                    cantidad: cantidad_cambio,
+                    valor_descuento: descuento_cambio_en_pesos,
+                    descuento_porcentaje: descuento_cambio,
+                    precio_venta: precio_cambio,
+                    nombre_producto: nombre_producto_nuevo
+
+                };
+            }
+            return detalle;
+        });
+
+        console.log(detallesVenta);
+        swalInstance.close();
+        modalInstance.hide();
+        await imprimirDetalles(); // Recargamos la tabla para ver los cambios
+
+        Swal.fire({
+            icon: 'success',
+            title: "Exito",
+            text: "¡Detalle venta actualizado exitosamente!",
+        });
+        
+    } catch (error) {
+        console.error(`Error al actualizar detalle ${detalleId}:`, error);
+        Swal.fire({
+            icon: "error",
+            title: ('Error al actualizar detalle'),
+            text:  error.message,
+        });
+    }
 }
-
 
 //funcion para inicializar
 export const init = () => {
@@ -430,8 +604,6 @@ export const init = () => {
     cargarProductos('1'); // '1' es el valor para Huevos
     const editForm = document.getElementById('edit-detalle-form');
 
-
-    createDetalles();  
     tableBody.removeEventListener('click', handleTableClick);
     tableBody.addEventListener('click', handleTableClick);
     editForm.removeEventListener('submit', handleUpdateSubmit);
@@ -448,7 +620,7 @@ export const init = () => {
             // localStorage.clear(); 
             
             // console.log("LocalStorage limpiado");
-           Swal.fire({
+            Swal.fire({
                 icon: 'success',
                 title: 'Venta guardada con exito',
                 text: 'Detalles añadidos exitosamente'
@@ -460,4 +632,6 @@ export const init = () => {
             loadContent(pageToLoad);
         });
     }
+
+    createDetalles(); 
 };
