@@ -3,20 +3,6 @@ import { request } from './apiClient.js';
 
 export const ventaService = {
     getVentas: () => {
-        // const userString = localStorage.getItem('user');
-        // if (!userString) {
-        //     return Promise.reject(new Error('Información de usuario no encontrada.'));
-        // }
-        // const user = JSON.parse(userString);
-        
-        // ejemplo de lo que se puede hacer con datos almacenados
-        // if (user.id_rol != 1){
-        //     if (user.id_rol != 2){
-        //         alert("no tiene permisos");
-        //         // redirigir a otro lado
-        //     };
-        // };
-        
         const endpoint = `/ventas/all-ventas`;
         
         // La lógica es mucho más simple ahora, solo llamamos a nuestro cliente central.
@@ -35,9 +21,9 @@ export const ventaService = {
     },
 
     /**
-     * Actualizar un usuario.
+     * Actualizar una venta.
      * @param {string | number} ventaId - El ID de la venta a actualizar.
-     * @param {object} ventaData - Los nuevos datos del usuario.
+     * @param {object} ventaData - Los nuevos datos de la venta.
      * @returns {Promise<object>}
     */
     updateVenta: (ventaId, ventaData) => {
@@ -88,4 +74,9 @@ export const ventaService = {
         return request(endpoint);
     },
     
+    // Obtener ventas por rango de fechas sin paginar
+    getVentasByDateSinPag: (fechaInicio, fechaFin) => {
+        const endpoint = `/ventas/all-rango-fechas?fecha_inicio=${fechaInicio}&fecha_fin=${fechaFin}`;
+        return request(endpoint);
+    }
 };
