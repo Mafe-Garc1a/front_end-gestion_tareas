@@ -379,11 +379,6 @@ async function handleStatusSwitch(event) {
     }
   }else{
     switchElement.checked = !newStatus;
-    await swalWithBootstrapButtons.fire({
-      title: "Cancelado",
-      text: "No se realizaron cambios.",
-      icon: "info"
-    });
   }
 }
 
