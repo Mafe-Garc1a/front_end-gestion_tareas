@@ -7,14 +7,15 @@
                     <div class="d-flex justify-content-between align-items-center">
                         <h4 class="card-title mb-0">Ventas</h4>
                         <div>
-                            <button type="button" class="btn btn-success me-2" onclick="loadContent('metodos_pago')">
+                            <button type="button" class="btn btn-outline-primary me-2 btn-sm text-nowrap"
+                                onclick="loadContent('metodos_pago')">
                                 <i class="fa fa-credit-card me-1">
 
                                 </i>Ir a Métodos de Pago
                             </button>
 
                             <!-- Botón de exportar con dropdown -->
-                            <!-- <div class="btn-group page-utilities me-2">
+                            <div class="btn-group page-utilities me-2">
                                 <button class="btn btn-outline-secondary dropdown-toggle" type="button" id="export-btn"
                                     data-bs-toggle="dropdown" aria-expanded="false">
                                     <i class="fa fa-file-export me-1"></i> Exportar
@@ -25,8 +26,9 @@
                                     <li><a class="dropdown-item export-format" href="#" data-format="excel">Exportar
                                             Excel</a>
                                     </li>
+                                    <li><a class="dropdown-item export-format" href="#" data-format="pdf">Exportar PDF</a></li>
                                 </ul>
-                            </div> -->
+                            </div>
 
                             <!-- Boton crear venta -->
                             <button type="button" id="btnCreateVenta" class="btn btn-success"
@@ -37,25 +39,30 @@
                     </div>
 
                     <!-- Segunda linea del encabezado -->
-                    <div class="d-flex align-items-end gap-2 mt-4">
-
-                        <div class="input-group" style="width: 260px;">
-                            <span class="input-group-text"><i>Fecha inicio</i></span>
-                            <input type="date" id="fecha-inicio" class="form-control">
+                    
+                        <div class="row g-3 my-4 align-items-end">
+                            <div class="col-md-4">
+                                <div class="input-group">
+                                    <span class="input-group-text"><i>Fecha inicio</i></span>
+                                    <input type="date" id="fecha-inicio" class="form-control">
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="input-group">
+                                    <span class="input-group-text"><i>Fecha fin</i></span>
+                                    <input type="date" id="fecha-fin" class="form-control">
+                                </div>
+                            </div>
+                            <div class="col-md-4 d-flex gap-2">
+                                <button type="button" class="btn btn-success w-50" id="btn-apply-date-filter">
+                                    <i class="fas fa-filter"></i> Filtrar
+                                </button>
+                                <button type="button" class="btn btn-secondary w-50" id="btn_clear_filters">
+                                    <i class="fas fa-times"></i> Limpiar
+                                </button>
+                            </div>
                         </div>
-                        <div class="input-group" style="width: 260px;">
-                            <span class="input-group-text"><i>Fecha fin</i></span>
-                            <input type="date" id="fecha-fin" class="form-control">
-                        </div>
-                        <div class="col-md-3 d-flex align-items-end">
-                            <button type="button" class="btn btn-success me-2" id="btn-apply-date-filter">
-                                <i class="fas fa-filter"></i> Filtrar
-                            </button>
-                            <button type="button" class="btn btn-secondary" id="btn_clear_filters">
-                                <i class="fas fa-times"></i> Limpiar
-                            </button>
-                        </div>
-                    </div>
+                    
 
                 </div>
                 <div class="table-responsive mt-4">
@@ -68,7 +75,7 @@
                                 <th scope="col" class="fw-semibold">Metodo pago</th>
                                 <th scope="col" class="fw-semibold">Total</th>
                                 <th scope="col" class="fw-semibold">Estado</th>
-                                <th scope="col" class="fw-semibold">Acciones</th>
+                                <th scope="col" class="fw-semibold text-end">Acciones</th>
                             </tr>
                         </thead>
                         <tbody id="ventas-table-body">
