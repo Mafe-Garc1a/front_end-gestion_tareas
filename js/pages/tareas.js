@@ -441,8 +441,10 @@ function attachEvents() {
 export function init() {
   initModals();
   attachEvents();
+  loadUsuariosSelects();   // <-- Nuevo
   loadPage(1);
 }
+
 
 /* ---------------------------------------------------
  UTIL
