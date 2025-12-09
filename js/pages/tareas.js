@@ -369,22 +369,16 @@ function initModals() {
 --------------------------------------------------- */
 function openEditModalFromCache(id_tarea) {
   const t = cachedTareas.find(x => x.id_tarea === id_tarea);
-  if (!t) {
-    Swal.fire("No se encontro tarea 0para editar , recarga la pagina!");
-    return;
-  }
+  if (!t) return Swal.fire("No se encontró la tarea.");
 
-  const setIf = (id, value) => {
-    const el = document.getElementById(id);
-    if (el) el.value = value ?? "";
-  };
+  document.getElementById("edit-id_tarea").value = t.id_tarea;
+  document.getElementById("edit-id_usuario").value = t.id_usuario; // ya está disabled
+  document.getElementById("edit-descripcion").value = t.descripcion;
+  document.getElementById("edit-fecha_hora_init").value = formatDateInputToLocalDatetime(t.fecha_hora_init);
+  document.getElementById("edit-fecha_hora_fin").value =
+    t.fecha_hora_fin ? formatDateInputToLocalDatetime(t.fecha_hora_fin) : "";
 
-  setIf("edit-id_tarea", t.id_tarea);
-  setIf("edit-id_usuario", t.id_usuario);
-  setIf("edit-descripcion", t.descripcion);
-  setIf("edit-fecha_hora_init", formatDateInputToLocalDatetime(t.fecha_hora_init));
-  setIf("edit-fecha_hora_fin", t.fecha_hora_fin ? formatDateInputToLocalDatetime(t.fecha_hora_fin) : "");
-  setIf("edit-estado", t.estado);
+  document.getElementById("edit-estado").value = t.estado;
 
   if (editModalInst) editModalInst.show();
 }
