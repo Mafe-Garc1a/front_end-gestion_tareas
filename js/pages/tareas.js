@@ -106,7 +106,7 @@ async function loadPage(page = 1) {
     if (user.id_rol === 4) {
       const tareas = await tareaService.getByUser(user.id_usuario);
       const arr = Array.isArray(tareas) ? tareas : [];
-
+      console.log(tareas)
       responseData = {
         page,
         page_size: arr.length,
