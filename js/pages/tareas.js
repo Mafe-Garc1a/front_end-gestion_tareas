@@ -229,7 +229,7 @@ function renderPagination(currentPage, totalPages) {
    PERMISOS UI
 --------------------------------------------------- */
 function applyUiPermissions(user) {
-  const btnCreate = document.getElementById("btn-open-create");
+  const btnCreate = document.getElementById("btn-open-create-user");
   if (!btnCreate) return;
 
   if (user.id_rol === 4) {

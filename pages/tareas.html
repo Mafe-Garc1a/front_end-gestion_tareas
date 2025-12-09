@@ -76,9 +76,10 @@
 
         <div class="modal-body app-modal-body">
           <div class="mb-3">
-            <label for="create-id_usuario" class="form-label">ID Usuario</label>
-            <input type="number" class="form-control app-input" id="create-id_usuario" required>
+            <label for="create-id_usuario" class="form-label">Usuario</label>
+            <select class="form-select" id="create-id_usuario" required></select>
           </div>
+
 
           <div class="mb-3">
             <label for="create-descripcion" class="form-label">Descripción</label>
@@ -130,9 +131,10 @@
           <input type="hidden" id="edit-id_tarea" />
 
           <div class="mb-3">
-            <label for="edit-id_usuario" class="form-label">ID Usuario</label>
-            <input type="number" class="form-control app-input" id="edit-id_usuario" required>
+            <label for="edit-id_usuario" class="form-label">Usuario</label>
+            <select class="form-select" id="edit-id_usuario" disabled></select>
           </div>
+
 
           <div class="mb-3">
             <label for="edit-descripcion" class="form-label">Descripción</label>
