@@ -13,9 +13,10 @@
                     <span><i class="ti ti-shopping-cart text-dark h3"></i></span>
                     <p class="mb-0 fs-5 text-dark">Información de la venta</p>
                 </div>
-                <div class="d-flex align-items-center gap-3 mt-3" id="venta-info-container">
-                    
+                <div class="row align-items-center gap-3 mt-3" id="venta-info-container">
+
                 </div>
+                
             </div>
         </div>
     </div>
@@ -27,32 +28,38 @@
                 <div class="d-flex align-items-center gap-2">
                     <p class="mb-0 fs-5 text-dark">Agregar Productos</p>
                 </div>
-                <div class="d-flex align-items-center gap-3 mt-3">
-                    <div class="d-flex flex-column">
-                        <label for="tipo_producto" class="form-label fw-semibold mb-1">Tipo de producto</label>
-                        <select class="form-select form-select-sm rounded border-secondary shadow-sm bg-white" id="tipo_producto">
+                <div class="row d-flex gap-3 mt-3">
+                    <div class="col-9 col-sm-6 col-md-5 col-lg-2">
+                        <label for="tipo_producto" class="form-label fw-semibold mb-1">Tipo</label>
+                        <select class="form-select form-select-sm rounded border-secondary w-100 shadow-sm bg-white"
+                            id="tipo_producto">
                             <option value="1">Huevos</option>
                             <option value="2">Salvamento</option>
                         </select>
                     </div>
-                    <div class="d-flex flex-column">
+                    <div class="col-9 col-sm-6 col-md-5 col-lg-2">
                         <label for="productos_select" class="form-label fw-semibold mb-1">Producto</label>
-                        <select class="form-select form-select-sm rounded border-secondary shadow-sm bg-white" id="productos_select">
+                        <select class="form-select form-select-sm rounded w-100 border-secondary shadow-sm bg-white"
+                            id="productos_select">
                             <!-- <option>Selecciona producto</option> -->
                         </select>
                     </div>
-                    <div class="d-flex flex-column">
+                    <div class="col-6 col-sm-6 col-md-3 col-lg">
                         <label for="cantidad" class="form-label fw-semibold mb-1">Cantidad</label>
-                        <input type="number" class="form-control-sm border-secondary shadow-sm bg-white" id="cantidad" placeholder="0">
+                        <input type="number" class="form-control-sm w-100 border border-secondary bg-white"
+                            id="cantidad" placeholder="0">
                     </div>
-                    <div class="d-flex flex-column">
+                    <div class="col-6 col-sm-6 col-md-3 col-lg">
                         <label for="precio_unitario" class="form-label fw-semibold mb-1">Precio Unitario</label>
-                        <input type="number" class="form-control-sm border-secondary shadow-sm bg-white" id="precio_unitario" placeholder="0.00">
+                        <input type="number" class="form-control-sm w-100 border border-secondary bg-white"
+                            id="precio_unitario" placeholder="0.00">
                     </div>
-                    <div class="d-flex flex-column">
+                    <div class="col-6 col-sm-6 col-md-3 col-lg">
                         <label for="descuento" class="form-label fw-semibold mb-1">Descuento (%)</label>
-                        <input type="number" class="form-control-sm border-secondary shadow-sm bg-white" id="descuento" placeholder="0">
+                        <input type="number" class="form-control-sm w-100 border border-secondary bg-white"
+                            id="descuento" placeholder="0">
                     </div>
+
                 </div>
                 <div class="mt-4">
                     <button class="btn btn-success" id="createDetalle">
@@ -85,13 +92,13 @@
                             </tr>
                         </thead>
                         <tbody id="detalles-table-body">
-                            
+
                         </tbody>
                     </table>
                 </div>
-                
+
                 <hr class="my-4">
-                
+
                 <div class="row">
                     <div class="col-md-6">
                         <p class="mb-1 fw-semibold">Total de descuentos:</p>
@@ -102,7 +109,7 @@
                         <p id="total-venta" class="text-success fw-semibold"></p>
                     </div>
                 </div>
-                
+
                 <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
                     <button data-page="ventas" id="guardar_venta" class="btn btn-success d-flex align-items-center">
                         Guardar Venta
@@ -119,40 +126,39 @@
 <div class="modal fade" id="edit-detalle-modal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
-        <div class="modal-header">
-            <h5 class="modal-title">Editar Detalle</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-            <form id="edit-detalle-form">
-            <input type="hidden" id="edit-detalle-id">
+            <div class="modal-header">
+                <h5 class="modal-title">Editar Detalle</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="edit-detalle-form">
+                    <input type="hidden" id="edit-detalle-id">
 
-            <div class="mb-3">
-                <label for="select-edit-producto" class="form-label">Producto</label>
-                <select class="form-control" id="select-edit-producto">
+                    <div class="mb-3">
+                        <label for="select-edit-producto" class="form-label">Producto</label>
+                        <select class="form-control" id="select-edit-producto">
 
-                </select>
-            </div>
-            <div class="mb-3">
-                <label for="edit-cantidad" class="form-label">Cantidad</label>
-                <input type="number" class="form-control" id="edit-cantidad">
-            </div>
-            <div class="mb-3">
-                <label for="edit-descuento" class="form-label">Descuento %</label>
-                <input type="number" class="form-control" id="edit-descuento">
-            </div>
-            <div class="mb-3">
-                <label for="edit-precio_unitario" class="form-label">Precio unitario</label>
-                <input type="number" class="form-control" id="edit-precio_unitario">
-            </div>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="edit-cantidad" class="form-label">Cantidad</label>
+                        <input type="number" class="form-control" id="edit-cantidad">
+                    </div>
+                    <div class="mb-3">
+                        <label for="edit-descuento" class="form-label">Descuento %</label>
+                        <input type="number" class="form-control" id="edit-descuento">
+                    </div>
+                    <div class="mb-3">
+                        <label for="edit-precio_unitario" class="form-label">Precio unitario</label>
+                        <input type="number" class="form-control" id="edit-precio_unitario">
+                    </div>
 
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                    </div>
+                </form>
             </div>
-            </form>
-        </div>
         </div>
     </div>
 </div>
-

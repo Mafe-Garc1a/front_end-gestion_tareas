@@ -47,31 +47,37 @@ function mostrarInformacionVenta(ventaData) {
         'Fecha no disponible';
 
     container.innerHTML = `
-        <div class="d-flex flex-column">
-            <label class="form-label fw-semibold mb-1">Vendedor</label>
-            <p class="mb-0 form-control-sm border-secondary border shadow-sm bg-white bg-light">${ventaData.nombre_usuario}</p>
+        <div class="col col-sm-12 col-md-12 col-lg-8">
+            <div class="row">
+                <div class="col-6 col-md-3 col-lg-3 d-flex flex-column">
+                    <label class="form-label fw-semibold mb-1">Vendedor</label>
+                    <p class="mb-0 form-control-sm border-secondary border shadow-sm bg-white bg-light">${ventaData.nombre_usuario}</p>
+                </div>
+                <div class="col-6 col-md-3 col-lg-3 d-flex flex-column">
+                    <label class="form-label fw-semibold mb-1">Fecha</label>
+                    <p class="mb-0 form-control-sm border-secondary border shadow-sm bg-white bg-light">${fecha}</p>
+                </div>
+                <div class="col-6 col-md-3 col-lg-3 d-flex flex-column">
+                    <label class="form-label fw-semibold mb-1">Método de Pago</label>
+                    <p class="mb-0 form-control-sm border-secondary border shadow-sm bg-white bg-light">${ventaData.metodo_pago}</p>
+                </div>
+                <div class="col-6 col-md-3 col-lg-3 d-flex flex-column">
+                    <label class="form-label fw-semibold mb-1">ID Venta</label>
+                    <p class="mb-0 form-control-sm border-secondary border shadow-sm bg-white bg-light">#${ventaData.id_venta}</p>
+                </div>
+                <!-- 
+                <div class="col d-flex flex-column justify-content-end">
+                    <label class="form-label fw-semibold mb-1">Acciones</label>
+                    <button class="btn btn-primary btn-edit-venta-detalles" 
+                            data-venta-id="${ventaData.id_venta}">
+                        <i class="fa-regular fa-pen-to-square"></i></i>
+                        Editar
+                    </button>
+                </div>     
+            </div>
+            
         </div>
-        <div class="d-flex flex-column">
-            <label class="form-label fw-semibold mb-1">Fecha</label>
-            <p class="mb-0 form-control-sm border-secondary border shadow-sm bg-white bg-light">${fecha}</p>
-        </div>
-        <div class="d-flex flex-column">
-            <label class="form-label fw-semibold mb-1">Método de Pago</label>
-            <p class="mb-0 form-control-sm border-secondary border shadow-sm bg-white bg-light">${ventaData.metodo_pago}</p>
-        </div>
-        <div class="d-flex flex-column">
-            <label class="form-label fw-semibold mb-1">ID Venta</label>
-            <p class="mb-0 form-control-sm border-secondary border shadow-sm bg-white bg-light">#${ventaData.id_venta}</p>
-        </div>
-        <!-- 
-        <div class="d-flex flex-column justify-content-end">
-            <label class="form-label fw-semibold mb-1">Acciones</label>
-            <button class="btn btn-primary btn-edit-venta-detalles" 
-                    data-venta-id="${ventaData.id_venta}">
-                <i class="fa-regular fa-pen-to-square"></i></i>
-                Editar
-            </button>
-        </div>
+        
         -->
     `;
 }
