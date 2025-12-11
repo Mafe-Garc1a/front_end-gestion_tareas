@@ -1,5 +1,5 @@
 // pages/tareas.js
-// Importamos lo que se comunica con la API
+// Importamos lo que se comunica con la API de tareas
 import { tareaService } from "../api/tareas.service.js";
 
 // Instancias de modales
@@ -345,8 +345,8 @@ function initModals() {
           loadPage(currentPage);
           Swal.fire({
             title: "Tarea actualizada exitosamente!",
-            icon: "success",
-            draggable: true
+            icon: "success",          
+            confirmButtonColor:'#28A745'
           });
         } catch (err) {
           console.error("Error actualizar tarea:", err);
@@ -456,3 +456,4 @@ function debounce(fn, ms = 300) {
     t = setTimeout(() => fn(...args), ms);
   };
 }
+

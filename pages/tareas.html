@@ -4,7 +4,7 @@
             <div class="card-body">
                 <div class="d-md-flex align-items-center">
                     <div>
-                        <h4 class="mb-0">Tareas</h4>
+                        <h4 class="card-title">Tareas</h4>
                     </div>
                     <div class="ms-auto mt-3 mt-md-0">
                       <div class="col-auto">
@@ -31,7 +31,7 @@
                             </div>
                             <div class="col-auto">
                               <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#create-tarea-modal"
-                                  id="btn-open-create-user"><i class="fa fa-plus me-1"></i>Nueva tarea</button>
+                                  id="btn-open-create-user"><i class="fa fa-plus me-1"></i>Agregar</button>
                             </div>
                           </div>
                         </div>
@@ -42,14 +42,14 @@
                     <table class="table table-striped table-hover table-sm mb-0 text-nowrap align-middle">
                         <thead>
                             <tr>
-                                <th class="fw-semibold">Id tarea</th>
-                                <th class="fw-semibold">Documento</th>
-                                <th class="fw-semibold">Nombre</th>
-                                <th class="fw-semibold">Descripción</th>
-                                <th class="fw-semibold">Fecha/hora inicio</th>
-                                <th class="fw-semibold">Fecha/hora fin</th>
-                                <th class="fw-semibold">Estado</th>
-                                <th class="fw-semibold">Acciones</th>
+                                <th class="">Id tarea</th>
+                                <th class="">Documento</th>
+                                <th class="">Nombre</th>
+                                <th class="">Descripción</th>
+                                <th class="">Fecha/hora inicio</th>
+                                <th class="">Fecha/hora fin</th>
+                                <th class="">Estado</th>
+                                <th class="">Acciones</th>
                             </tr>
                         </thead>
                         <tbody id="tareas-table-body">
@@ -70,16 +70,15 @@
     <div class="modal-content app-modal-content">
       <form id="create-tarea-form">
         <div class="modal-header app-modal-header">
-          <h5 class="modal-title">Crear Nueva Tarea</h5>
+          <h5 class="modal-title">Agregar Tarea</h5>
           <button type="button" class="btn-close app-btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
 
         <div class="modal-body app-modal-body">
           <div class="mb-3">
-            <label for="create-id_usuario" class="form-label">Usuario</label>
-            <select class="form-select" id="create-id_usuario" required></select>
+            <label for="create-id_usuario" class="form-label">ID Usuario</label>
+            <input type="number" class="form-control app-input" id="create-id_usuario" required>
           </div>
-
 
           <div class="mb-3">
             <label for="create-descripcion" class="form-label">Descripción</label>
@@ -110,7 +109,7 @@
 
         <div class="modal-footer app-modal-footer">
           <button type="button" class="btn app-btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-          <button type="submit" class="btn btn-success">Crear</button>
+          <button type="submit" class="btn btn-success">Agregar</button>
         </div>
       </form>
     </div>
@@ -131,10 +130,9 @@
           <input type="hidden" id="edit-id_tarea" />
 
           <div class="mb-3">
-            <label for="edit-id_usuario" class="form-label">Usuario</label>
-            <select class="form-select" id="edit-id_usuario" disabled></select>
+            <label for="edit-id_usuario" class="form-label">ID Usuario</label>
+            <input type="number" class="form-control app-input" id="edit-id_usuario" required>
           </div>
-
 
           <div class="mb-3">
             <label for="edit-descripcion" class="form-label">Descripción</label>

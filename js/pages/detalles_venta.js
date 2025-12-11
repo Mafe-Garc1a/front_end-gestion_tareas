@@ -1,5 +1,6 @@
 import { loadContent } from "../main.js";
 import { detalleVentaService } from '../api/detalle_venta.service.js';
+import { ventaService } from "../api/venta.service.js"; 
 
 let modalInstance = null; // Guardará la instancia del modal de Bootstrap
 let createModalInstance = null;
@@ -293,6 +294,7 @@ async function handleTableClick(event) {
                     icon: 'success',
                     title: "Éxito",
                     text: "Detalle eliminado correctamente",
+                    confirmButtonColor: '#28a745'
                 });
 
                 imprimirDetalles(detallesVenta);
@@ -518,6 +520,7 @@ async function handleUpdateSubmit(event) {
             icon: 'success',
             title: "Exito",
             text: "¡Detalle venta actualizado exitosamente!",
+            confirmButtonColor: '#28a745'
         });
         
     } catch (error) {
@@ -610,7 +613,7 @@ export const init = () => {
     editForm.addEventListener('submit', handleUpdateSubmit);
 
     const button_guardar_venta = document.getElementById("guardar_venta");
-    
+
     if (button_guardar_venta) {
         button_guardar_venta.addEventListener("click", (event) => {
             event.preventDefault();
@@ -623,7 +626,8 @@ export const init = () => {
             Swal.fire({
                 icon: 'success',
                 title: 'Venta guardada con exito',
-                text: 'Detalles añadidos exitosamente'
+                text: 'Detalles añadidos exitosamente',
+                confirmButtonColor: '#28a745'
             });
             const pageToLoad = button_guardar_venta.dataset.page;
             console.log(`Navegando a: ${pageToLoad}`);
@@ -631,6 +635,62 @@ export const init = () => {
             // Usar la función de navegación
             loadContent(pageToLoad);
         });
+    }
+
+    const button_cancelar_venta = document.getElementById("cancelar_venta"); 
+
+    if(button_cancelar_venta){
+        button_cancelar_venta.addEventListener("click", async (event) => {
+            console.log("¿Por que me quieres cancelar :( ?"); 
+
+            const confirmar_cancelacion = await Swal.fire({
+                title: "¿Está seguro de cancelar venta?",
+                text: "Esta acción NO se puede deshacer.",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonText: "Sí, cancelar venta",
+                cancelButtonText: "No, seguir modificando",
+                reverseButtons: true
+            });
+
+            if(confirmar_cancelacion.isConfirmed){
+                const swalInstance = Swal.fire({
+                    title: 'Cancelando venta...',
+                    html: '<div class="spinner-border text-primary" role="status"></div>',
+                    showConfirmButton: false,
+                    allowOutsideClick: false,
+                    backdrop: 'rgba(0,0,0,0.4)'
+                });
+
+                try{
+                    console.log("heeeey");
+
+                    const respuestaServicioCancelar = await ventaService.cambiarEstado(idVentaReciente, 0);
+                    console.log(respuestaServicioCancelar); 
+
+                    const pageToLoad = button_cancelar_venta.dataset.page;
+                    console.log(`Navegando a: ${pageToLoad}`);
+
+                    swalInstance.close; 
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Venta cancelada con exito',
+                        confirmButtonColor: '#28a745'
+                    });
+
+
+                    loadContent(pageToLoad); 
+                }catch(error){
+                    console.error(`Error al cancelar venta${idVentaReciente}:`, error);
+                    Swal.fire({
+                        icon: "error",
+                        title: ('Error al cancelar venta'),
+                        text:  error.message,
+                    });
+                }
+            }
+
+        })
     }
 
     createDetalles(); 
