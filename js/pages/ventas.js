@@ -298,6 +298,11 @@ async function init(page = 1, page_size = 10, fechaInicio = activeFechaInicio, f
   const btnClear = document.getElementById('btn_clear_filters');
   btnClear.removeEventListener('click', limpiarFiltros);
   btnClear.addEventListener('click', limpiarFiltros);
+
+  const pageUtilities = document.querySelector(".page-utilities");
+  pageUtilities.removeEventListener("click", handleExportClick);
+  pageUtilities.addEventListener("click", handleExportClick);
+
 }
 
 export { init };
@@ -541,11 +546,6 @@ async function cargarMetodosPago() {
 
 
 // Export: manejar clicks en el dropdown (CSV / Excel)
-  const pageUtilities = document.querySelector(".page-utilities");
-  if (pageUtilities) {
-    pageUtilities.removeEventListener("click", handleExportClick);
-    pageUtilities.addEventListener("click", handleExportClick);
-  }
 
 function convertToCSV(rows, columns) {
   const escapeCell = (val) => {
