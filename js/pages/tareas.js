@@ -48,8 +48,8 @@ function createTareaRow(t) {
   return `
     <tr data-id_tarea="${t.id_tarea}">
       <td class="cell">${t.id_tarea}</td>
-      <td class="cell">${t.documento}</td>
-      <td class="cell">${t.nombre_usuario}</td>
+      <td class="cell desaparecer">${t.documento}</td>
+      <td class="cell desaparecer">${t.nombre_usuario}</td>
       <td class="cell">${t.descripcion}</td>
       <td class="cell">${formatDateDisplay(t.fecha_hora_init)}</td>
       <td class="cell">${t.fecha_hora_fin ? formatDateDisplay(t.fecha_hora_fin) : "-"}</td>
@@ -230,13 +230,21 @@ function renderPagination(currentPage, totalPages) {
 --------------------------------------------------- */
 function applyUiPermissions(user) {
   const btnCreate = document.getElementById("btn-open-create-user");
+  
   if (!btnCreate) return;
+  // if (!desaparecerElements) return;
 
   if (user.id_rol === 4) {
     btnCreate.style.display = "none";
+    // desaparecerElements.style.display = "none";
   } else {
     btnCreate.style.display = "inline-block";
+    // desaparecerElements.style.display = "table-cell";
   }
+  const desaparecerElements =user.id_rol ===4 ? document.querySelectorAll(".desaparecer") : [];
+  desaparecerElements.forEach(el => {
+    el.style.display = user.id_rol === 4 ? "none" : "table-cell";
+  });
 
   const canEdit = user.id_rol !== 4;
   document.querySelectorAll(".btn-edit").forEach(btn => {
@@ -345,9 +353,8 @@ function initModals() {
           loadPage(currentPage);
           Swal.fire({
             title: "Tarea actualizada exitosamente!",
-            icon: "success",
-            draggable: true,
-            confirmButton:'#28A745'
+            icon: "success",          
+            confirmButtonColor:'#28A745'
           });
         } catch (err) {
           console.error("Error actualizar tarea:", err);

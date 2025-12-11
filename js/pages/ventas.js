@@ -8,11 +8,12 @@ let originalMail = null;
 
 const swalWithBootstrapButtons = Swal.mixin({
   customClass: {
-    confirmButton: "btn btn-success",
+    confirmButton: "btn btn-success ms-2",
     cancelButton: "btn btn-secondary"
   },
   buttonsStyling: false
 });
+
 
 function createVentaRow(venta) {
   const fecha = new Date(venta.fecha_hora);
@@ -299,6 +300,11 @@ async function init(page = 1, page_size = 10, fechaInicio = activeFechaInicio, f
   const btnClear = document.getElementById('btn_clear_filters');
   btnClear.removeEventListener('click', limpiarFiltros);
   btnClear.addEventListener('click', limpiarFiltros);
+
+  const pageUtilities = document.querySelector(".page-utilities");
+  pageUtilities.removeEventListener("click", handleExportClick);
+  pageUtilities.addEventListener("click", handleExportClick);
+
 }
 
 export { init };
@@ -542,11 +548,6 @@ async function cargarMetodosPago() {
 
 
 // Export: manejar clicks en el dropdown (CSV / Excel)
-  const pageUtilities = document.querySelector(".page-utilities");
-  if (pageUtilities) {
-    pageUtilities.removeEventListener("click", handleExportClick);
-    pageUtilities.addEventListener("click", handleExportClick);
-  }
 
 function convertToCSV(rows, columns) {
   const escapeCell = (val) => {
@@ -716,6 +717,7 @@ function loadScript(src) {
 
 
 async function handleExportClick(event) {
+  console.log("Entró a funcion exportar")
   const item = event.target.closest(".export-format");
   if (!item) return;
   event.preventDefault();
@@ -761,7 +763,6 @@ async function handleExportClick(event) {
 async function obtenerVentasExport(fechaInicio = "", fechaFin = "") {
   "Esta funcion se hizo con el proposito de obtener ventas solo para exportar; ya que utiliza un endpoint sin paginacion"
   try {
-    console.log("ENTRO A OBTENER VENTAS EXPORTAR");
     let response;
     if (fechaInicio && fechaFin) {
       response = await ventaService.getVentasByDateSinPag(fechaInicio, fechaFin);

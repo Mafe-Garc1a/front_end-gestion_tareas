@@ -341,8 +341,8 @@ async function handleStatusSwitch(event) {
 
   const swalWithBootstrapButtons = Swal.mixin({
     customClass: {
-      confirmButton: "btn btn-success ms-2",
-      cancelButton: "btn btn-danger"
+        confirmButton: 'btn btn-success ms-2',
+        cancelButton: 'btn btn-secondary'
     },
     buttonsStyling: false
   });

@@ -14,7 +14,7 @@
                               <input id="search-input" class="form-control form-control-sm app-search-input" placeholder="Buscar descripción..." />
                             </div>
                             <div class="col-auto">
-                              <select class="form-select form-select-sm rounded border-secondary shadow-sm bg-white me-2"id="filter-estado">
+                              <select class="form-select w-auto"id="filter-estado">
                                 <option selected value="all">Todos los estados</option>
                                 <option value="Asignada">Asignada</option>
                                 <option value="Pendiente">Pendiente</option>
@@ -31,7 +31,7 @@
                             </div>
                             <div class="col-auto">
                               <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#create-tarea-modal"
-                                  id="btn-open-create-user"><i class="fa fa-plus me-1"></i>Nueva tarea</button>
+                                  id="btn-open-create-user"><i class="fa fa-plus me-1"></i>Agregar</button>
                             </div>
                           </div>
                         </div>
@@ -43,13 +43,13 @@
                         <thead>
                             <tr>
                                 <th class="">Id tarea</th>
-                                <th class="">Documento</th>
-                                <th class="">Nombre</th>
+                                <th class="desaparecer">Documento</th>
+                                <th class="desaparecer">Nombre</th>
                                 <th class="">Descripción</th>
                                 <th class="">Fecha/hora inicio</th>
                                 <th class="">Fecha/hora fin</th>
                                 <th class="">Estado</th>
-                                <th class="">Acciones</th>
+                                <th class="desaparecer">Acciones</th>
                             </tr>
                         </thead>
                         <tbody id="tareas-table-body">
@@ -70,7 +70,7 @@
     <div class="modal-content app-modal-content">
       <form id="create-tarea-form">
         <div class="modal-header app-modal-header">
-          <h5 class="modal-title">Crear Nueva Tarea</h5>
+          <h5 class="modal-title">Agregar Tarea</h5>
           <button type="button" class="btn-close app-btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
 
@@ -109,7 +109,7 @@
 
         <div class="modal-footer app-modal-footer">
           <button type="button" class="btn app-btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-          <button type="submit" class="btn btn-success">Crear</button>
+          <button type="submit" class="btn btn-success">Agregar</button>
         </div>
       </form>
     </div>
@@ -131,7 +131,7 @@
 
           <div class="mb-3">
             <label for="edit-id_usuario" class="form-label">ID Usuario</label>
-            <input type="number" class="form-control app-input" id="edit-id_usuario" required>
+            <input type="number" class="form-control app-input" id="edit-id_usuario" readonly>
           </div>
 
           <div class="mb-3">
