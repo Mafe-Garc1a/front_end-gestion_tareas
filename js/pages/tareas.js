@@ -345,9 +345,8 @@ function initModals() {
           loadPage(currentPage);
           Swal.fire({
             title: "Tarea actualizada exitosamente!",
-            icon: "success",
-            
-            confirmButton:'#28A745'
+            icon: "success",          
+            confirmButtonColor:'#28A745'
           });
         } catch (err) {
           console.error("Error actualizar tarea:", err);
