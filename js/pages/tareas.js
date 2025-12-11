@@ -239,6 +239,7 @@ function applyUiPermissions(user) {
     desaparecerElements.style.display = "none";
   } else {
     btnCreate.style.display = "inline-block";
+    desaparecerElements.style.display = "table-cell";
   }
 
   const canEdit = user.id_rol !== 4;
