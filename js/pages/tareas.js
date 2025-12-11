@@ -232,14 +232,14 @@ function applyUiPermissions(user) {
   const btnCreate = document.getElementById("btn-open-create-user");
   const desaparecerElements = document.querySelectorAll(".desaparecer");
   if (!btnCreate) return;
-  if (!desaparecerElements) return;
+  // if (!desaparecerElements) return;
 
   if (user.id_rol === 4) {
     btnCreate.style.display = "none";
-    desaparecerElements.style.display = "none";
+    // desaparecerElements.style.display = "none";
   } else {
     btnCreate.style.display = "inline-block";
-    desaparecerElements.style.display = "table-cell";
+    // desaparecerElements.style.display = "table-cell";
   }
 
   const canEdit = user.id_rol !== 4;
