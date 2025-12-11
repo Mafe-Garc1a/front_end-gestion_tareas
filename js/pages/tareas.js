@@ -230,10 +230,12 @@ function renderPagination(currentPage, totalPages) {
 --------------------------------------------------- */
 function applyUiPermissions(user) {
   const btnCreate = document.getElementById("btn-open-create-user");
+  const desaparecerElements = document.querySelectorAll(".desaparecer");
   if (!btnCreate) return;
 
   if (user.id_rol === 4) {
     btnCreate.style.display = "none";
+    desaparecerElements.style.display = "none";
   } else {
     btnCreate.style.display = "inline-block";
   }
