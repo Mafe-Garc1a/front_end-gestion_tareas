@@ -232,6 +232,7 @@ function applyUiPermissions(user) {
   const btnCreate = document.getElementById("btn-open-create-user");
   const desaparecerElements = document.querySelectorAll(".desaparecer");
   if (!btnCreate) return;
+  if (!desaparecerElements) return;
 
   if (user.id_rol === 4) {
     btnCreate.style.display = "none";
