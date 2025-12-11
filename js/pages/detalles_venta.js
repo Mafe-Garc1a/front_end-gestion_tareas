@@ -10,6 +10,14 @@ let detallesVenta = [];
 let idVentaReciente = null; 
 let ventaDataGlobal = null;
 
+const swalWithBootstrapButtons = Swal.mixin({
+    customClass: {
+        confirmButton: 'btn btn-success ms-2',
+        cancelButton: 'btn btn-secondary'
+    },
+    buttonsStyling: false
+});
+
 
 function obtenerDatosVenta() {
     try {
@@ -275,9 +283,9 @@ async function handleTableClick(event) {
         let tipo_producto_delete = deleteButton.dataset.tipoProducto;
         let id_detalle_delete = deleteButton.dataset.detalleId;
 
-        const confirmacion = await Swal.fire({
+        const confirmacion = await swalWithBootstrapButtons.fire({
             title: "¿Eliminar este detalle?",
-            text: "Esta acción no se puede deshacer.",
+            text: "Esta acción NO se puede deshacer.",
             icon: "warning",
             showCancelButton: true,
             confirmButtonText: "Sí, eliminar",
@@ -618,7 +626,16 @@ export const init = () => {
         button_guardar_venta.addEventListener("click", (event) => {
             event.preventDefault();
             console.log("¡Botón de venta clickeado!");
-            
+
+            if(detallesVenta.length == 0){
+                Swal.fire({
+                    icon: "error",
+                    title: 'No se puede registrar la venta',
+                    text: "No se puede registrar venta sin detalles creados.",
+                    confirmButtonColor: '#28a745'
+                });
+                return; 
+            }   
             // limpiar el localStorage
             // localStorage.clear(); 
             
@@ -643,15 +660,16 @@ export const init = () => {
         button_cancelar_venta.addEventListener("click", async (event) => {
             console.log("¿Por que me quieres cancelar :( ?"); 
 
-            const confirmar_cancelacion = await Swal.fire({
-                title: "¿Está seguro de cancelar venta?",
+            const confirmar_cancelacion = await swalWithBootstrapButtons.fire({
+                title: "¿Está seguro de cancelar la venta?",
                 text: "Esta acción NO se puede deshacer.",
                 icon: "warning",
                 showCancelButton: true,
-                confirmButtonText: "Sí, cancelar venta",
+                confirmButtonText: "Sí, cancelar venta", 
                 cancelButtonText: "No, seguir modificando",
                 reverseButtons: true
             });
+
 
             if(confirmar_cancelacion.isConfirmed){
                 const swalInstance = Swal.fire({
