@@ -462,7 +462,7 @@
 // }
 // pages/tareas.js
 // Importamos lo que se comunica con la API
-import { tareaService } from "../js/api/tareas.service.js";
+import { tareaService } from "../api/tareas.service.js";
 
 // Instancias de modales
 let createModalInst = null;
