@@ -808,7 +808,8 @@ function initModals() {
           Swal.fire({
             title: "Tarea actualizada exitosamente!",
             icon: "success",
-            draggable: true
+            draggable: true,
+            confirmButton:'#28A745'
           });
         } catch (err) {
           console.error("Error actualizar tarea:", err);
