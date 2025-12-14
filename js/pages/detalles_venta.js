@@ -10,6 +10,9 @@ let detallesVenta = [];
 let idVentaReciente = null; 
 let ventaDataGlobal = null;
 
+const selectMetodoPago = document.getElementById('metodo_pago');
+const tableBody = document.getElementById('detalles-table-body');
+
 const swalWithBootstrapButtons = Swal.mixin({
     customClass: {
         confirmButton: 'btn btn-success ms-2',
@@ -39,8 +42,10 @@ function obtenerDatosVenta() {
 // Función para mostrar la información de la venta
 function mostrarInformacionVenta(ventaData) {
     const container = document.getElementById('venta-info-container');
+    const infoPrincipalVenta = document.getElementById('info-venta');
 
     if (!ventaData) {
+        infoPrincipalVenta.classList.add('d-none');
         container.innerHTML = `
             <div class="col-12 text-center">
                 <p class="text-danger">No se encontró información de la venta</p>
@@ -49,143 +54,179 @@ function mostrarInformacionVenta(ventaData) {
         return;
     }
 
-    // Formatear la fecha (si viene en formato ISO)
-    const fecha = ventaData.fecha_hora ? 
-        new Date(ventaData.fecha_hora).toLocaleDateString('es-ES') : 
-        'Fecha no disponible';
+    const inputVendedor = document.getElementById('nombre_vendedor');
+    const inputFecha = document.getElementById('fecha_venta');
+    const inputIdVenta = document.getElementById('id_venta');
 
-    container.innerHTML = `
-        <div class="col col-sm-12 col-md-12 col-lg-8">
-            <div class="row">
-                <div class="col-6 col-md-3 col-lg-3 d-flex flex-column">
-                    <label class="form-label fw-semibold mb-1">Vendedor</label>
-                    <p class="mb-0 form-control-sm border-secondary border shadow-sm bg-white bg-light">${ventaData.nombre_usuario}</p>
-                </div>
-                <div class="col-6 col-md-3 col-lg-3 d-flex flex-column">
-                    <label class="form-label fw-semibold mb-1">Fecha</label>
-                    <p class="mb-0 form-control-sm border-secondary border shadow-sm bg-white bg-light">${fecha}</p>
-                </div>
-                <div class="col-6 col-md-3 col-lg-3 d-flex flex-column">
-                    <label class="form-label fw-semibold mb-1">Método de Pago</label>
-                    <p class="mb-0 form-control-sm border-secondary border shadow-sm bg-white bg-light">${ventaData.metodo_pago}</p>
-                </div>
-                <div class="col-6 col-md-3 col-lg-3 d-flex flex-column">
-                    <label class="form-label fw-semibold mb-1">ID Venta</label>
-                    <p class="mb-0 form-control-sm border-secondary border shadow-sm bg-white bg-light">#${ventaData.id_venta}</p>
-                </div>
-                <!-- 
-                <div class="col d-flex flex-column justify-content-end">
-                    <label class="form-label fw-semibold mb-1">Acciones</label>
-                    <button class="btn btn-primary btn-edit-venta-detalles" 
-                            data-venta-id="${ventaData.id_venta}">
-                        <i class="fa-regular fa-pen-to-square"></i></i>
-                        Editar
-                    </button>
-                </div>     
-            </div>
-            
-        </div>
-        
-        -->
-    `;
+    inputVendedor.value = ventaData.nombre_usuario;
+    inputIdVenta.value = `#${ventaData.id_venta}`;
+
+
+    if (ventaData.fecha_hora) {
+        const fecha = new Date(ventaData.fecha_hora).toISOString().split('T')[0];
+        inputFecha.value = fecha;
+    }
+
+    // Formatear la fecha (si viene en formato ISO)
+    // const fecha = ventaData.fecha_hora ? 
+    //     new Date(ventaData.fecha_hora).toLocaleDateString('es-ES') : 
+    //     'Fecha no disponible';
+
+    cargarMetodosPago(ventaData.tipo_pago);
 }
 
-const tableBody = document.getElementById('detalles-table-body');
+async function cargarMetodosPago(idMetodoSeleccionado = null) {
+    selectMetodoPago.innerHTML = '';
 
-function createDetalles() {
-    const botonAgregar = document.getElementById('createDetalle'); 
-    botonAgregar.addEventListener('click', async function(event){
-        console.log('Si, soy el botón AJAJAJAJ'); 
+    if (idMetodoSeleccionado === null) {
+        const optionPlaceholder = document.createElement('option');
+        optionPlaceholder.textContent = 'Seleccione un método';
+        optionPlaceholder.selected = true;
+        selectMetodoPago.appendChild(optionPlaceholder);
+    }
 
-        const idProducto = document.getElementById('productos_select');
-        const cantidad = document.getElementById('cantidad').value;
-        const valorDescuento = document.getElementById('descuento').value || 0;
-        const precioVenta = document.getElementById('precio_unitario').value;
-        const selectDetalle = document.getElementById('tipo_producto').value;
+    try {
+        const metodos = await ventaService.getMetodosPago();
 
-        //capturo valores especifocs del select de productos: 
-        let nombre_producto_seleccionado = idProducto.options[idProducto.selectedIndex].dataset.nombre;
+        metodos.forEach(metodo => {
+            const option = document.createElement('option');
+            option.value = metodo.id_tipo;
+            option.textContent = metodo.nombre;
+
+            if (metodo.id_tipo === idMetodoSeleccionado) {
+                option.selected = true;
+            }
+
+            selectMetodoPago.appendChild(option);
+        });
+
+    } catch (error) {
+        console.error("Error cargando métodos de pago:", error);
+    }
+}
+
+selectMetodoPago.addEventListener('change', async (event) => {
+    const cambioMetodoPago = event.target.value;
+
+    if (!cambioMetodoPago) return;
+
+    try {
+        await ventaService.updateVenta(idVentaReciente, {
+            tipo_pago: cambioMetodoPago
+        });
+        console.log(`siii, cambieee jswjdiwj ${cambioMetodoPago}`);
         
-        if(idProducto == "" || cantidad == "" || precioVenta == ""){
-            console.log('._., ciego');
-            return;
-        }
+    } catch (error) {
+        console.error(error);
 
-        if (cantidad <= 0 || valorDescuento < 0 || precioVenta <= 0){
-            console.log('¿Y los numeros me los imagino o q?');
-            return;
-        }
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'No se pudo actualizar el método de pago'
+        });
+    }
+});
 
-        let descuentoPesos = (precioVenta * valorDescuento)/100; 
+async function handleCreateDetalle(event) {
+    event.preventDefault();
+    console.log('Si, soy el botón AJAJAJAJ'); 
+
+    const idProducto = document.getElementById('productos_select');
+    const cantidad = document.getElementById('cantidad').value;
+    const valorDescuento = document.getElementById('descuento').value || 0;
+    const precioVenta = document.getElementById('precio_unitario').value;
+    const selectDetalle = document.getElementById('tipo_producto').value;
+
+    //capturo valores especifocs del select de productos: 
+    let nombre_producto_seleccionado = idProducto.options[idProducto.selectedIndex].dataset.nombre;
+    
+    if (!idProducto || !cantidad || !precio_venta) {
+    Swal.fire({
+        icon: 'warning',
+        title: 'Campos incompletos',
+        text: 'Debes completar todos los campos obligatorios'
+    });
+    return;
+    }
+
+    if (cantidad <= 0 || precio_venta <= 0 || descuento_porcentaje < 0) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Valores inválidos',
+            text: 'Cantidad, precio o descuento no son válidos'
+        });
+        return;
+    }
+
+    let descuentoPesos = (precioVenta * valorDescuento)/100; 
+    
+    const detallesData = { 
+        id_producto: idProducto.value,
+        cantidad: cantidad,
+        id_venta: idVentaReciente, 
+        valor_descuento: descuentoPesos,
+        precio_venta: precioVenta
+    };
+
+    const swalWithBootstrapButtonsCreateDetalle = Swal.mixin({
+        customClass: {
+            confirmButton: "btn btn-success ms-2",
+            cancelButton: "btn btn-danger"
+        },
+        buttonsStyling: false
+    });
+
+    try {
+        botonAgregar.disabled = true;
+        botonAgregar.textContent = 'Agregando...';
         
-        const detallesData = { 
+        let respuesta_crear_detalle;
+        let id_creado; 
+        if(selectDetalle === '1'){
+            respuesta_crear_detalle = await detalleVentaService.createDetalleHuevos(detallesData); 
+            id_creado = respuesta_crear_detalle.id_detalle_huevo
+            // console.log('Detalle Huevo creado exitosamente', respuesta_crear_detalle);
+            console.log('si soy ', id_creado); 
+
+        }else if (selectDetalle === '2'){ 
+            respuesta_crear_detalle =  await detalleVentaService.createDetalleSalvamento(detallesData); 
+            id_creado = respuesta_crear_detalle.id_detalle_salvamento
+            console.log('q pasouuu id', id_creado); 
+            console.log('Detalle Salvamento creado exitosamente', respuesta_crear_detalle);
+        }
+        
+        let data = {
             id_producto: idProducto.value,
+            id_detalle : id_creado, 
+            tipo_detalle: selectDetalle === '1' ? 'Huevos' : 'Salvamento', 
+            nombre_producto: nombre_producto_seleccionado,
             cantidad: cantidad,
             id_venta: idVentaReciente, 
             valor_descuento: descuentoPesos,
+            descuento_porcentaje: valorDescuento,
             precio_venta: precioVenta
-        };
+        }
+        detallesVenta.push(data); 
+        console.log(detallesVenta);
+        imprimirDetalles()
 
-        const swalWithBootstrapButtonsCreateDetalle = Swal.mixin({
-            customClass: {
-                confirmButton: "btn btn-success ms-2",
-                cancelButton: "btn btn-danger"
-            },
-            buttonsStyling: false
+        document.getElementById('productos_select').value = "";
+        document.getElementById('cantidad').value = "";
+        document.getElementById('descuento').value = "";
+        document.getElementById('precio_unitario').value = "";
+
+    } catch (error) {
+        console.error("Error:", error);
+        await swalWithBootstrapButtonsCreateDetalle.fire({
+            title: ('Error al agregar el producto'),
+            text:  error.message,
+            icon: "error"
         });
 
-        try {
-            botonAgregar.disabled = true;
-            botonAgregar.textContent = 'Agregando...';
-            
-            let respuesta_crear_detalle;
-            let id_creado; 
-            if(selectDetalle === '1'){
-                respuesta_crear_detalle = await detalleVentaService.createDetalleHuevos(detallesData); 
-                id_creado = respuesta_crear_detalle.id_detalle_huevo
-                // console.log('Detalle Huevo creado exitosamente', respuesta_crear_detalle);
-                console.log('si soy ', id_creado); 
-
-            }else if (selectDetalle === '2'){ 
-                respuesta_crear_detalle =  await detalleVentaService.createDetalleSalvamento(detallesData); 
-                id_creado = respuesta_crear_detalle.id_detalle_salvamento
-                console.log('q pasouuu id', id_creado); 
-                console.log('Detalle Salvamento creado exitosamente', respuesta_crear_detalle);
-            }
-            
-            let data = {
-                id_producto: idProducto.value,
-                id_detalle : id_creado, 
-                tipo_detalle: selectDetalle === '1' ? 'Huevos' : 'Salvamento', 
-                nombre_producto: nombre_producto_seleccionado,
-                cantidad: cantidad,
-                id_venta: idVentaReciente, 
-                valor_descuento: descuentoPesos,
-                descuento_porcentaje: valorDescuento,
-                precio_venta: precioVenta
-            }
-            detallesVenta.push(data); 
-            console.log(detallesVenta);
-            imprimirDetalles()
-
-            document.getElementById('productos_select').value = "";
-            document.getElementById('cantidad').value = "";
-            document.getElementById('descuento').value = "";
-            document.getElementById('precio_unitario').value = "";
-
-        } catch (error) {
-            console.error("Error:", error);
-            await swalWithBootstrapButtonsCreateDetalle.fire({
-                title: ('Error al agregar el producto'),
-                text:  error.message,
-                icon: "error"
-            });
-
-        } finally {
-            botonAgregar.disabled = false;
-            botonAgregar.textContent = 'Agregar Producto';
-        }
-    });
+    } finally {
+        botonAgregar.disabled = false;
+        botonAgregar.textContent = 'Agregar Producto';
+    }
 }
 
 async function imprimirDetalles(){
@@ -207,8 +248,15 @@ async function imprimirDetalles(){
         const colPrecio = document.createElement('td');
         colPrecio.textContent = `$${parseFloat(element.precio_venta).toFixed(2)}`;
 
-        const colDescuento = document.createElement('td');
-        colDescuento.textContent = element.valor_descuento;
+        const colDescuentoPorcentaje = document.createElement('td');
+        colDescuentoPorcentaje.textContent = element.descuento_porcentaje;
+
+        const colDescuentoPesos = document.createElement('td');
+        let descuentoColPesos = element.valor_descuento * element.cantidad
+        colDescuentoPesos.textContent = `$${descuentoColPesos.toLocaleString('es-CO')}`;
+
+        const colSubTotal = document.createElement('td'); 
+        colSubTotal.textContent = `$${calcularSubtotal(element).toLocaleString('es-CO')}`;
 
         const colAcciones = document.createElement('td');
         
@@ -232,13 +280,19 @@ async function imprimirDetalles(){
         fila.appendChild(colProducto);
         fila.appendChild(colCantidad);
         fila.appendChild(colPrecio);
-        fila.appendChild(colDescuento);
+        fila.appendChild(colDescuentoPorcentaje);
+        fila.appendChild(colDescuentoPesos);
+        fila.appendChild(colSubTotal);
         fila.appendChild(colAcciones);
         
         tableBody.appendChild(fila);
     });
 
     calcularTotal(detallesVenta)
+}
+
+function calcularSubtotal(producto) {
+    return (producto.precio_venta - producto.valor_descuento) *producto.cantidad;
 }
 
 function calcularTotal(detalles){
@@ -254,7 +308,7 @@ function calcularTotal(detalles){
     let totalVenta = 0;
     let totalDescuento = 0;
     detalles.forEach(producto => {
-        let subtotal = (producto.precio_venta - producto.valor_descuento) * producto.cantidad;
+        let subtotal = calcularSubtotal(producto); 
         totalVenta += subtotal;
         totalDescuento += producto.valor_descuento * producto.cantidad;
     });
@@ -626,6 +680,9 @@ export const init = () => {
     editForm.removeEventListener('submit', handleUpdateSubmit);
     editForm.addEventListener('submit', handleUpdateSubmit);
 
+    const btnAgregar = document.getElementById('createDetalle');
+    btnAgregar.removeEventListener('click', handleCreateDetalle);
+    btnAgregar.addEventListener('click', handleCreateDetalle);
     const button_guardar_venta = document.getElementById("guardar_venta");
 
     if (button_guardar_venta) {
