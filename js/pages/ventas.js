@@ -397,6 +397,13 @@ async function handleCreateVentaClick(event) {
   };
 
   try {
+    swalWithBootstrapButtons.fire({
+      icon: 'success',
+      title: "Creando venta...",
+      showConfirmButton: false,
+      timer: 1500
+    });
+
     // Crear la venta en la base de datos
     const response = await ventaService.createVenta(ventaData);
     let dataVenta = response.data_venta;
@@ -405,17 +412,11 @@ async function handleCreateVentaClick(event) {
     // Guardar en localStorage
     localStorage.setItem('data_venta', JSON.stringify(dataVenta));
 
-    swalWithBootstrapButtons.fire({
-      icon: 'success',
-      title: "Creando venta...",
-      showConfirmButton: false,
-      timer: 1500
-    });
-
-    const pageToLoad = event.target.dataset.page;
+    // Si se hizo click en el icono o en el span siempre busca el boton
+    const boton = event.target.closest("button");
+    const pageToLoad = boton.dataset.page;
     loadContent(pageToLoad);
-
-
+    
   } catch (error) {
     console.error("Error al crear la venta:", error);
     swalWithBootstrapButtons.fire({
