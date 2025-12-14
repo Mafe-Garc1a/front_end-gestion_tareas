@@ -400,7 +400,7 @@ async function handleCreateVentaClick(event) {
       icon: 'success',
       title: "Creando venta...",
       showConfirmButton: false,
-      timer: 1500
+      timer: 2000
     });
 
     // Crear la venta en la base de datos
