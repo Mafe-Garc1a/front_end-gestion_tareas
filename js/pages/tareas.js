@@ -74,7 +74,7 @@ function createTareaRow(t) {
 
 async function loadUsuariosSelects() {
   try {
-    const usuarios = await usuarioService.getAll();
+    const usuarios = await userService.getAll();
     if (!Array.isArray(usuarios)) return;
 
     const createSelect = document.getElementById("create-id_usuario");
