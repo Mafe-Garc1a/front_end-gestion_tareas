@@ -50,7 +50,7 @@ function formatDateDisplay(value) {
 function createTareaRow(t) {
   return `
     <tr data-id_tarea="${t.id_tarea}">
-      <td class="cell">${t.id_tarea}</td>
+      <td class="cell desaparecer">${t.id_tarea}</td>
       <td class="cell desaparecer">${t.documento}</td>
       <td class="cell desaparecer">${t.nombre_usuario}</td>
       <td class="cell">${t.descripcion}</td>
