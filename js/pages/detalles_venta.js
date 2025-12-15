@@ -614,12 +614,10 @@ async function handleUpdateSubmit(event) {
     } catch (error) {
         console.error(`Error al actualizar detalle ${detalleId}:`, error);
         console.error(error);
-        const mensaje =
-            error.response?.data?.detail || "Error inesperado";
         Swal.fire({
             icon: "error",
             title: ('Error al actualizar detalle'),
-            text:  mensaje,
+            text:  error.message,
         });
         
     }
