@@ -1,6 +1,7 @@
 import { loadContent } from "../main.js";
 import { detalleVentaService } from '../api/detalle_venta.service.js';
 import { ventaService } from "../api/venta.service.js"; 
+import {rescueService} from "../js/rescue.service.js";
 
 let modalInstance = null; // Guardará la instancia del modal de Bootstrap
 let createModalInstance = null;
@@ -668,8 +669,9 @@ export const init = () => {
                 placeholderCantidad.placeholder = "Ingrese cantidad";
                 return;
             }
-            let cantidadDisponibleStock = await stockService.GetStockById(productos_select.value);
-            placeholderCantidad.placeholder = `cantidad disponible: ${cantidadDisponibleStock.cantidad_disponible}`;
+
+            let cantidadDisponibleStock = typeDetalle == "1" ? await stockService.GetStockById(productos_select.value) : await rescueService.getRescueById(productos_select.value);
+            placeholderCantidad.placeholder = `cantidad disponible: ${ typeDetalle == "1" ? cantidadDisponibleStock.cantidad_disponible : cantidadDisponibleStock.cantidad_gallinas}`;
         };
         if (typeDetalle === "1"){
             try {
