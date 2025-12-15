@@ -1,6 +1,8 @@
 import { loadContent } from "../main.js";
 import { detalleVentaService } from '../api/detalle_venta.service.js';
-import { ventaService } from "../api/venta.service.js"; 
+import { ventaService } from "../api/venta.service.js";
+import { stockService } from "../js/api/stock.service.js";
+import {rescueService} from "../js/rescue.service.js";
 
 // =========================
 // VARIABLES GLOBALES
@@ -654,7 +656,21 @@ export const init = () => {
 
     const cargarProductos = async (typeDetalle) => {
         productos_select.innerHTML = '<option value="">Selecciona producto</option>';
+        let placeholderCantidad = document.getElementById("cantidad");
+        
+        // Reset inicial
+        placeholderCantidad.placeholder = "Ingrese cantidad";
 
+        // Eliminar listeners previos (opcional pero recomendado)
+        productos_select.onchange = async () => {
+            if (productos_select.value === "") {
+                placeholderCantidad.placeholder = "Ingrese cantidad";
+                return;
+            }
+
+            let cantidadDisponibleStock = typeDetalle == "1" ? await stockService.GetStockById(productos_select.value) : await rescueService.getRescueById(productos_select.value);
+            placeholderCantidad.placeholder = `cantidad disponible: ${ typeDetalle == "1" ? cantidadDisponibleStock.cantidad_disponible : cantidadDisponibleStock.cantidad_gallinas}`;
+        };
         try {
             if (typeDetalle === "1") {
                 const productos = await detalleVentaService.getProductosStock();
