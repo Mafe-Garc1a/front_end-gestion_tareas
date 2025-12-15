@@ -12,6 +12,8 @@ let ventaDataGlobal = null;
 
 const selectMetodoPago = document.getElementById('metodo_pago');
 const tableBody = document.getElementById('detalles-table-body');
+const botonAgregar = document.getElementById('createDetalle');
+
 
 const swalWithBootstrapButtons = Swal.mixin({
     customClass: {
@@ -140,7 +142,7 @@ async function handleCreateDetalle(event) {
     //capturo valores especifocs del select de productos: 
     let nombre_producto_seleccionado = idProducto.options[idProducto.selectedIndex].dataset.nombre;
     
-    if (!idProducto || !cantidad || !precio_venta) {
+    if (!idProducto || !cantidad || !precioVenta) {
     Swal.fire({
         icon: 'warning',
         title: 'Campos incompletos',
@@ -149,7 +151,7 @@ async function handleCreateDetalle(event) {
     return;
     }
 
-    if (cantidad <= 0 || precio_venta <= 0 || descuento_porcentaje < 0) {
+    if (cantidad <= 0 || precioVenta <= 0 || valorDescuento < 0) {
         Swal.fire({
             icon: 'warning',
             title: 'Valores inválidos',
@@ -680,7 +682,6 @@ export const init = () => {
     editForm.removeEventListener('submit', handleUpdateSubmit);
     editForm.addEventListener('submit', handleUpdateSubmit);
 
-    const btnAgregar = document.getElementById('createDetalle');
     btnAgregar.removeEventListener('click', handleCreateDetalle);
     btnAgregar.addEventListener('click', handleCreateDetalle);
     const button_guardar_venta = document.getElementById("guardar_venta");
@@ -773,6 +774,4 @@ export const init = () => {
 
         })
     }
-
-    createDetalles(); 
 };
