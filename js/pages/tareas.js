@@ -73,6 +73,9 @@ function createTareaRow(t) {
 // selects tareas
 
 async function loadUsuariosSelects() {
+  const user = getCurrentUser();
+  if (!user || user.id_rol === 4) return;
+
   try {
     const usuarios = await userService.getUsers();
     if (!Array.isArray(usuarios)) return;
@@ -100,10 +103,12 @@ async function loadUsuariosSelects() {
       `;
     }
 
-  } catch (error) {
+  } 
+   catch (error) {
     console.error("Error cargando usuarios:", error);
   }
 }
+
 
 /* ---------------------------------------------------
    CARGAR LISTADO DE TAREAS
@@ -486,7 +491,10 @@ function attachEvents() {
 export function init() {
   initModals();
   attachEvents();
-   loadUsuariosSelects();  // <-- Nuevo
+   if (user && user.id_rol !== 4) {
+    loadUsuariosSelects();
+  }
+ // <-- Nuevo
   loadPage(1);
 }
 
