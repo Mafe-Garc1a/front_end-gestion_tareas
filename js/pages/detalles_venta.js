@@ -409,64 +409,64 @@ async function handleTableClick(event) {
     }
 }
 
-/*función asincronica si se traen los datos desde el back
-async function openEditModal(id, tipo_product, id_producto) {
-    console.log(id, tipo_product, id_producto);  
-    const modalElement = document.getElementById('edit-detalle-modal');
+// función asincronica si se traen los datos desde el back
+// async function openEditModal(id, tipo_product, id_producto) {
+//     console.log(id, tipo_product, id_producto);  
+//     const modalElement = document.getElementById('edit-detalle-modal');
 
-    if (!modalInstance) {
-        modalInstance = new bootstrap.Modal(modalElement);
-    }
-    try {
-        const select_edit = document.getElementById("select-edit-producto");
-        const detalle = await detalleVentaService.getDetalleVenta(id, tipo_product);
-        console.log(detalle); 
+//     if (!modalInstance) {
+//         modalInstance = new bootstrap.Modal(modalElement);
+//     }
+//     try {
+//         const select_edit = document.getElementById("select-edit-producto");
+//         const detalle = await detalleVentaService.getDetalleVenta(id, tipo_product);
+//         console.log(detalle); 
 
-        let productos_select_edit;
+//         let productos_select_edit;
 
-        if(tipo_product == 'Huevos'){
-            productos_select_edit = await detalleVentaService.getProductosStock()
-        }else if(tipo_product == 'Salvamento'){
-            productos_select_edit = await detalleVentaService.getProductosSalvamento()
+//         if(tipo_product == 'Huevos'){
+//             productos_select_edit = await detalleVentaService.getProductosStock()
+//         }else if(tipo_product == 'Salvamento'){
+//             productos_select_edit = await detalleVentaService.getProductosSalvamento()
 
-        }
+//         }
         
-        select_edit.innerHTML = '';
-        productos_select_edit.forEach(element => {
-            const option_edit = document.createElement("option");
-            option_edit.value =  tipo_product == 'Huevos' ? element.id_producto : element.id_salvamento;
-            option_edit.dataset.tipoProducto = tipo_product;
-            option_edit.textContent = tipo_product == 'Huevos' ? `Huevo ${element.color} ${element.tamanio} ${element.unidad_medida}` : element.raza;
+//         select_edit.innerHTML = '';
+//         productos_select_edit.forEach(element => {
+//             const option_edit = document.createElement("option");
+//             option_edit.value =  tipo_product == 'Huevos' ? element.id_producto : element.id_salvamento;
+//             option_edit.dataset.tipoProducto = tipo_product;
+//             option_edit.textContent = tipo_product == 'Huevos' ? `Huevo ${element.color} ${element.tamanio} ${element.unidad_medida}` : element.raza;
 
-            select_edit.appendChild(option_edit);
-        });
+//             select_edit.appendChild(option_edit);
+//         });
 
-        select_edit.value = id_producto;
+//         select_edit.value = id_producto;
 
 
-        const input_edit_cantidad = document.getElementById("edit-cantidad");
-        const input_edit_descuento = document.getElementById("edit-descuento");
-        const input_edit_precio_unitario = document.getElementById("edit-precio_unitario");
-        const input_id_detalle_edit = document.getElementById("edit-detalle-id");
+//         const input_edit_cantidad = document.getElementById("edit-cantidad");
+//         const input_edit_descuento = document.getElementById("edit-descuento");
+//         const input_edit_precio_unitario = document.getElementById("edit-precio_unitario");
+//         const input_id_detalle_edit = document.getElementById("edit-detalle-id");
 
-        console.log("acaaaaaaa", detalle);
-        input_edit_cantidad.value = detalle.cantidad;
-        input_edit_descuento.value = detalle.valor_descuento;
-        input_edit_precio_unitario.value = detalle.precio_venta;
-        input_id_detalle_edit.value = detalle.id_detalle;
+//         console.log("acaaaaaaa", detalle);
+//         input_edit_cantidad.value = detalle.cantidad;
+//         input_edit_descuento.value = detalle.valor_descuento;
+//         input_edit_precio_unitario.value = detalle.precio_venta;
+//         input_id_detalle_edit.value = detalle.id_detalle;
 
-        // console.log("aqui: ", detalle)
-        modalInstance.show();
+//         // console.log("aqui: ", detalle)
+//         modalInstance.show();
 
-    } catch (error) {
-        console.error(`Error al obtener datos del detalle ${detalle.id_detalle}`, error);
-        Swal.fire({
-            icon: "error",
-            title: 'Ups...',
-            text: "Error al obtener datos del detalle",
-        });
-    }
-}*/
+//     } catch (error) {
+//         console.error(`Error al obtener datos del detalle ${detalle.id_detalle}`, error);
+//         Swal.fire({
+//             icon: "error",
+//             title: 'Ups...',
+//             text: "Error al obtener datos del detalle",
+//         });
+//     }
+// }
 
 //función asincronica si se traen los datos desde el array
 async function openEditModal(id, tipo_product, id_producto) {
