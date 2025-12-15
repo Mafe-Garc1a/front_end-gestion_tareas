@@ -21,7 +21,6 @@ async function obtenerDatosVenta(idVentaVer) {
     try {
         const ventaData = await ventaService.getVentaById(idVentaVer);
         if (ventaData) {
-            console.log(ventaData);
             mostrarInformacionVenta(ventaData);
         } else {
             container.innerHTML = `
@@ -60,32 +59,26 @@ function mostrarInformacionVenta(ventaData) {
         'Fecha no disponible';
 
     container.innerHTML = `
-        <div class="d-flex flex-column">
-            <label class="form-label fw-semibold mb-1">Vendedor</label>
-            <p class="mb-0 form-control bg-light">${ventaData.nombre_usuario}</p>
+        <div class="col col-sm-12 col-md-12 col-lg-8">
+            <div class="row">
+                <div class="col-6 col-md-3 col-lg-3 d-flex flex-column">
+                    <label class="form-label fw-semibold mb-1">Vendedor</label>
+                    <p class="mb-0 form-control-sm border-secondary border shadow-sm bg-white bg-light">${ventaData.nombre_usuario}</p>
+                </div>
+                <div class="col-6 col-md-3 col-lg-3 d-flex flex-column">
+                    <label class="form-label fw-semibold mb-1">Fecha</label>
+                    <p class="mb-0 form-control-sm border-secondary border shadow-sm bg-white bg-light">${fecha}</p>
+                </div>
+                <div class="col-6 col-md-3 col-lg-3 d-flex flex-column">
+                    <label class="form-label fw-semibold mb-1">Método de Pago</label>
+                    <p class="mb-0 form-control-sm border-secondary border shadow-sm bg-white bg-light">${ventaData.metodo_pago}</p>
+                </div>
+                <div class="col-6 col-md-3 col-lg-3 d-flex flex-column">
+                    <label class="form-label fw-semibold mb-1">ID Venta</label>
+                    <p class="mb-0 form-control-sm border-secondary border shadow-sm bg-white bg-light">#${ventaData.id_venta}</p>
+                </div>
+            </div>
         </div>
-        <div class="d-flex flex-column">
-            <label class="form-label fw-semibold mb-1">Fecha</label>
-            <p class="mb-0 form-control bg-light">${fecha}</p>
-        </div>
-        <div class="d-flex flex-column">
-            <label class="form-label fw-semibold mb-1">Método de Pago</label>
-            <p class="mb-0 form-control bg-light">${ventaData.metodo_pago}</p>
-        </div>
-        <div class="d-flex flex-column">
-            <label class="form-label fw-semibold mb-1">ID Venta</label>
-            <p class="mb-0 form-control bg-light">#${ventaData.id_venta}</p>
-        </div>
-        <!-- 
-        <div class="d-flex flex-column justify-content-end">
-            <label class="form-label fw-semibold mb-1">Acciones</label>
-            <button class="btn btn-primary btn-edit-venta-detalles" 
-                    data-venta-id="${ventaData.id_venta}">
-                <i class="fa-regular fa-pen-to-square me-1"></i>
-                Editar
-            </button>
-        </div>
-        -->
     `;
     imprimirDetalles();
 }
@@ -103,9 +96,14 @@ async function imprimirDetalles() {
     } catch (err) {
         console.warn("Error desde API:", err.message);
 
-        tableBody.innerHTML =
+        if (err.message === "Detalles no encontrados") {
+            tableBody.innerHTML =
+            `<tr><td colspan="7" class="text-center">No hay detalles disponibles para esta venta</td></tr>`;
+        } else {
+            tableBody.innerHTML =
             `<tr><td colspan="7" class="text-center">${err.message}</td></tr>`;
-        
+        }
+
         const descuentoElement = document.getElementById('tot-descuento');
         const totalElement = document.getElementById('tot-venta');
         
@@ -116,7 +114,7 @@ async function imprimirDetalles() {
 
     if (!detalles || !Array.isArray(detalles) || detalles.length === 0) {
         tableBody.innerHTML =
-            '<tr><td colspan="7" class="text-center">No hay detalles para esta venta</td></tr>';
+            '<tr><td colspan="7" class="text-center">No hay detalles disponibles para esta venta</td></tr>';
         return;
     }
 

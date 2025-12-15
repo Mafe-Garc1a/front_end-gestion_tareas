@@ -36,13 +36,16 @@ function createVentaRow(venta) {
                             id="switch-${venta.id_venta}" data-venta-id="${venta.id_venta
     }" 
                             ${venta.estado ? "checked" : ""}>
+                    <label class="form-check-label" for="switch-${venta.id_venta}">
+                          ${venta.estado ? 'Completada' : 'Cancelada'}
+                    </label>
                 </div>
             </td>
             <td class="cell d-flex justify-content-end gap-2">
-              <button class="btn btn-success btn-sm btn-edit-venta me-1" data-venta-id="${venta.id_venta}" aria-label="Editar">
+              <button class="btn btn-success btn-sm btn-edit-venta me-1" data-venta-id="${venta.id_venta}" aria-label="Editar" ${venta.estado ? "" : "disabled"}>
                 <i class="fa-regular fa-pen-to-square"></i>
               </button>
-              <button class="btn btn-success btn-sm btn-detalles-venta me-1" data-venta-id="${venta.id_venta}" data-page="info_venta">
+              <button class="btn btn-success btn-sm btn-detalles-venta me-1" data-venta-id="${venta.id_venta}" data-page="info_venta" ${venta.estado ? "" : "disabled"}>
                     <i class="fas fa-search"></i>
                 </button>
             </td>
@@ -67,7 +70,7 @@ async function fetchVentas(page = 1, page_size = 10, fechaInicio = "", fechaFin 
     if (!response || response.length === 0) {
       return [];
     }
-    console.log(response);
+
     return response;
   } catch (error) {
     if (error.message.includes("No hay ventas en ese rango de fechas") || error.response?.status === 404) {
@@ -221,10 +224,8 @@ function aplicarFiltros() {
 
 // funcion para dar formato a la fecha YYYY-MM-DD
 function convertirFecha(fechaEntrante) {
-  console.log("Antes de convertir", fechaEntrante);
  // Crear el objeto Date sin usar la zona horaria UTC
   const fecha = new Date(fechaEntrante);
-  console.log("Fecha convertida", fecha);
   const formato = fecha.getFullYear() + "-" +
     String(fecha.getMonth() + 1).padStart(2, '0') + "-" +
     String(fecha.getDate()).padStart(2, '0');
@@ -510,7 +511,6 @@ async function handleUpdateSubmit(event) {
 async function cargarMetodosPago() {
   try {
     const metodosPago = await ventaService.getMetodosPago();
-    console.log(metodosPago);
 
     const selectTipoPago = document.getElementById('edit-tipo-pago');
 
@@ -748,7 +748,6 @@ async function handleExportClick(event) {
     return;
   }
 
-  console.log("Datos a imprimir:", data);
   if (fmt === "csv") {
     exportToCSV(data, `ventas_${dateTag}.csv`);
   } else if (fmt === "excel") {
@@ -772,7 +771,7 @@ async function obtenerVentasExport(fechaInicio = "", fechaFin = "") {
     if (!response || response.length === 0) {
       return [];
     }
-    console.log(response);
+    
     return response;
   } catch (error) {
     if (error.message.includes("No hay ventas en ese rango de fechas") || error.response?.status === 404) {
