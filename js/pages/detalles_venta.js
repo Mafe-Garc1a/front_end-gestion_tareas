@@ -169,7 +169,10 @@ async function handleCreateDetalle(event) {
             icon: 'info',
             title: 'Producto ya agregado',
             text: 'Este producto ya se encuentra en los detalles de la venta. Puedes editar la información desde la tabla si es necesario.',
-            confirmButtonText: 'Entendido'
+            confirmButtonText: 'Entendido',
+            customClass: {
+                confirmButton: 'btn btn-success'
+            }
         });
         return;
     }
