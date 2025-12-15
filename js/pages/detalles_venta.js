@@ -555,6 +555,7 @@ async function handleUpdateSubmit(event) {
             title: "Datos incorrectos",
             text: posibles_errores.join('\n'), 
         });
+        
         return;
     }
 
@@ -618,6 +619,10 @@ async function handleUpdateSubmit(event) {
             icon: "error",
             title: ('Error al actualizar detalle'),
             text:  error.message,
+            customClass: {
+                confirmButton: 'btn btn-success ms-2'
+            }
+
         });
         
     }
