@@ -657,7 +657,20 @@ export const init = () => {
     // Función para cargar productos basado en el tipo
     async function cargarProductos(typeDetalle) {
         productos_select.innerHTML = '<option value="">Selecciona producto</option>';
+        let placeholderCantidad = document.getElementById("cantidad");
         
+        // Reset inicial
+        placeholderCantidad.placeholder = "Ingrese cantidad";
+
+        // Eliminar listeners previos (opcional pero recomendado)
+        productos_select.onchange = async () => {
+            if (productos_select.value === "") {
+                placeholderCantidad.placeholder = "Ingrese cantidad";
+                return;
+            }
+            let cantidadDisponibleStock = await stockService.GetStockById(productos_select.value);
+            placeholderCantidad.placeholder = `cantidad disponible: ${cantidadDisponibleStock.cantidad_disponible}`;
+        };
         if (typeDetalle === "1"){
             try {
                 const productos = await detalleVentaService.getProductosStock();
