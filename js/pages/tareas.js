@@ -1,6 +1,9 @@
 // pages/tareas.js
 // Importamos lo que se comunica con la API de tareas
 import { tareaService } from "../api/tareas.service.js";
+import { userService } from '../api/user.service.js';
+
+
 
 // Instancias de modales
 let createModalInst = null;
