@@ -159,6 +159,23 @@ async function handleCreateDetalle(event) {
         });
         return;
     }
+    const productoExistente = detallesVenta.find(
+        detalle => detalle.id_producto === idProducto.value && 
+                   detalle.tipo_detalle === (selectDetalle === '1' ? 'Huevos' : 'Salvamento')
+    );
+
+    if (productoExistente) {
+        Swal.fire({
+            icon: 'info',
+            title: 'Producto ya agregado',
+            text: 'Este producto ya se encuentra en los detalles de la venta. Puedes editar la información desde la tabla si es necesario.',
+            confirmButtonText: 'Entendido',
+            customClass: {
+                confirmButton: 'btn btn-success'
+            }
+        });
+        return;
+    }
 
     let descuentoPesos = (precioVenta * valorDescuento)/100; 
     
@@ -219,6 +236,7 @@ async function handleCreateDetalle(event) {
 
     } catch (error) {
         console.error("Error:", error);
+        
         await swalWithBootstrapButtonsCreateDetalle.fire({
             title: ('Error al agregar el producto'),
             text:  error.message,
@@ -595,11 +613,15 @@ async function handleUpdateSubmit(event) {
         
     } catch (error) {
         console.error(`Error al actualizar detalle ${detalleId}:`, error);
+        console.error(error);
+        const mensaje =
+            error.response?.data?.detail || "Error inesperado";
         Swal.fire({
             icon: "error",
             title: ('Error al actualizar detalle'),
-            text:  error.message,
+            text:  mensaje,
         });
+        
     }
 }
 
@@ -682,8 +704,8 @@ export const init = () => {
     editForm.removeEventListener('submit', handleUpdateSubmit);
     editForm.addEventListener('submit', handleUpdateSubmit);
 
-    btnAgregar.removeEventListener('click', handleCreateDetalle);
-    btnAgregar.addEventListener('click', handleCreateDetalle);
+    botonAgregar.removeEventListener('click', handleCreateDetalle);
+    botonAgregar.addEventListener('click', handleCreateDetalle);
     const button_guardar_venta = document.getElementById("guardar_venta");
 
     if (button_guardar_venta) {
