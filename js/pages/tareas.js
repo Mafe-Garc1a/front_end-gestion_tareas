@@ -67,6 +67,40 @@ function createTareaRow(t) {
     </tr>
   `;
 }
+// selects tareas
+
+async function loadUsuariosSelects() {
+  try {
+    const usuarios = await usuarioService.getAll();
+    if (!Array.isArray(usuarios)) return;
+
+    const createSelect = document.getElementById("create-id_usuario");
+    const editSelect = document.getElementById("edit-id_usuario");
+
+    const optionsHtml = usuarios.map(u => `
+      <option value="${u.id_usuario}">
+        ${u.nombre} - ${u.documento}
+      </option>
+    `).join("");
+
+    if (createSelect) {
+      createSelect.innerHTML = `
+        <option value="">Seleccione un usuario</option>
+        ${optionsHtml}
+      `;
+    }
+
+    if (editSelect) {
+      editSelect.innerHTML = `
+        <option value="">Seleccione un usuario</option>
+        ${optionsHtml}
+      `;
+    }
+
+  } catch (error) {
+    console.error("Error cargando usuarios:", error);
+  }
+}
 
 /* ---------------------------------------------------
    CARGAR LISTADO DE TAREAS
@@ -449,7 +483,7 @@ function attachEvents() {
 export function init() {
   initModals();
   attachEvents();
-     // <-- Nuevo
+   loadUsuariosSelects();  // <-- Nuevo
   loadPage(1);
 }
 
