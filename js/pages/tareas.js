@@ -491,6 +491,7 @@ function attachEvents() {
 export function init() {
   initModals();
   attachEvents();
+   const user = getCurrentUser();
    if (user && user.id_rol !== 4) {
     loadUsuariosSelects();
   }
